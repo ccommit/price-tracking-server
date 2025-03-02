@@ -1,4 +1,4 @@
-# PriceTrackerServer
+![PriceTracker_20250302_164343](https://github.com/user-attachments/assets/56743341-7c2a-4764-a327-f43ff4b67977)# PriceTrackerServer
 상품 가격 변동 추적 및 알림 서비스
 - PriceTrackerServer는 사용자가 관심 있는 상품의 가격 변동을 추적하고, 변동 내역을 시각적으로 제공하는 서비스입니다. 또한, 사용자가 설정한 조건에 따라 가격이 변동할 때 알림을 받을 수 있습니다.
 - 참고 : https://shopping.google.com/?nord=1&pli=1
@@ -60,5 +60,6 @@
 - 해외 시장 확대: 다국어 지원 및 글로벌 쇼핑몰(아마존, 이베이 등)과 연계하여 글로벌 가격 비교 기능 추가
 
 # ERD
-![PriceTracker_ERD](https://github.com/user-attachments/assets/4143240b-6be3-4d06-9aee-e30b0a590fab)
+![PriceTracker_ERD](https://github.com/user-attachments/assets/922ed4d8-90e7-449d-bf82-e3ccf29f49e6)
+
 
