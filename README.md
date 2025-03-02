@@ -9,7 +9,7 @@
 - 사용자 맞춤형 가격 알림 및 통계성 데이터 관리
 
 # 사용기술
-- JAVA23, Spring Boot 3.2, JPA, MySQL, Elasticsearch, Docker, Locust, JUnit5, Spring Batch
+- JAVA23, Spring Boot 3.2, JPA, MySQL, Elasticsearch, Redis, Docker, Locust, JUnit5, Spring Batch
 
 # 주요 기능
 - 상품 데이터 및 가격 추적
@@ -53,9 +53,7 @@
   - 로그인 실패 시, 실패 이유와 함께 로그인 실패 횟수가 LoginHistory 테이블에 저장된다.
 - 세션 관리
   - 세션의 상태는 active, expired, terminated(활성화, 만료, 종료)로 관리된다.
-  - 세션이 만료되거나 사용자가 로그아웃할 때 Session 테이블에서 해당 세션의 종료 시간이 기록된다.
   - 만료된 세션은 일정 시간이 지난 후 삭제된다.
-
   
 # 확장 계획
 - 상품 범위 확대: 전자제품뿐만 아니라 의류, 가전, 도서 등 다양한 카테고리 추가
