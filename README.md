@@ -62,4 +62,17 @@
 - 해외 시장 확대: 다국어 지원 및 글로벌 쇼핑몰(아마존, 이베이 등)과 연계하여 글로벌 가격 비교 기능 추가
 
 # ERD
-![PriceTracker_ERD](https://github.com/user-attachments/assets/f2a6285e-b936-4d83-9cf4-65432d821015)
+![PriceTracker_ERD](https://github.com/user-attachments/assets/70e545a3-711f-4c2b-952a-b2a0c7f4a98a)
+
+<details>
+  <summary><h1>Elasticsearch</h1></summary>
+
+  <img src="https://github.com/user-attachments/assets/a0b626e7-15a4-4709-b103-1d5684f2aec3" alt="price_tracking_server_elasticsearch_productId" />
+  <img src="https://github.com/user-attachments/assets/866fbee9-2d69-4934-8503-0aabe9fc8a64" alt="price_tracking_server_elasticsearch_trackingId" />
+  <img src="https://github.com/user-attachments/assets/8c9d62a3-06a0-4a41-923d-0564ee610f5a" alt="price_tracking_server_elasticsearch_product-price-rollup-daily" />
+  <img src="https://github.com/user-attachments/assets/bd2240dd-74e6-4427-96b4-a26ca59ec9fa" alt="price_tracking_server_elasticsearch_product-price-rollup-weekly" />
+  <img src="https://github.com/user-attachments/assets/f8000879-899a-4025-8279-147d6917ace1" alt="price_tracking_server_elasticsearch_product-price-rollup-monthly" />
+  <img src="https://github.com/user-attachments/assets/6baf88bc-f253-4d32-9740-5cadff2b0ee4" alt="price_tracking_server_elasticsearch_product-price-rollup-yearly" />
+
+</details>
+
