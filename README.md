@@ -1,7 +1,7 @@
 # price-tracking-server
 상품 가격 변동 추적 및 알림 서비스
 - PriceTrackerServer는 사용자가 관심 있는 상품의 가격 변동을 추적하고, 변동 내역을 시각적으로 제공하는 서비스입니다. 또한, 사용자가 설정한 조건에 따라 가격이 변동할 때 알림을 받을 수 있습니다.
-- 참고 : https://shopping.google.com/?nord=1&pli=1
+- 연동 API document : [https://shopping.google.com/?nord=1&pli=1](https://serpapi.com/google-shopping-api#api-parameters-serpapi-parameters-api-key)
 
 # 목적
 - **객체지향적 설계**를 통해 유지보수가 용이하게 개발, **클린 코드**를 구현하여 가독성을 높임
