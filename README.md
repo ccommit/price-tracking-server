@@ -99,8 +99,8 @@
 ![PriceTracker_ERD](https://github.com/user-attachments/assets/ac394f0c-2a7f-418e-a982-0980fbc36aad)
 
 
-<details open>
-  <summary><h1>Elasticsearch</h1></summary>
+<details>
+  <summary><h1 id="elasticsearch">Elasticsearch</h1></summary>
   <details>
     <summary><h2> productId API 문서</h2></summary>
     <img src="https://github.com/user-attachments/assets/a0b626e7-15a4-4709-b103-1d5684f2aec3" alt="price_tracking_server_elasticsearch_productId" />
