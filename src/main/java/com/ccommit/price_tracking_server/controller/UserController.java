@@ -2,7 +2,8 @@ package com.ccommit.price_tracking_server.controller;
 
 import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
 import com.ccommit.price_tracking_server.DTO.UserDTO;
-import com.ccommit.price_tracking_server.DTO.UserSignUpDTO;
+import com.ccommit.price_tracking_server.DTO.UserLoginResponseDTO;
+import com.ccommit.price_tracking_server.DTO.UserProfileResponseDTO;
 import com.ccommit.price_tracking_server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,16 +24,27 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponseDTO<UserSignUpDTO>> registerUser(@RequestBody @Validated({UserDTO.SignUp.class}) UserDTO userDTO) {
-        log.info("회원가입 요청: username={}, email={}", userDTO.getUsername(), userDTO.getEmail());
+    public ResponseEntity<CommonResponseDTO<UserProfileResponseDTO>> registerUser(@RequestBody @Validated({UserDTO.SignUp.class}) UserDTO userDTO) {
+        log.info("회원가입 요청: email={}", userDTO.getEmail());
 
-        UserSignUpDTO signUpDTO = userService.registerUser(userDTO);
-        CommonResponseDTO<UserSignUpDTO> response = new CommonResponseDTO<>("SUCCESS", "회원가입 성공",
+        UserProfileResponseDTO signUpDTO = userService.registerUser(userDTO);
+        CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>("SUCCESS", "회원가입 성공",
                 signUpDTO, "", "", 0);
 
-        log.info("회원가입 성공: username={}", signUpDTO.getUsername());
+        log.info("회원가입 성공: email={}", userDTO.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<CommonResponseDTO<UserLoginResponseDTO>> loginUser(@RequestBody @Validated({UserDTO.Login.class}) UserDTO userDTO) {
+        log.info("로그인 요청: email={}", userDTO.getEmail());
+
+        UserLoginResponseDTO loginDTO = userService.loginUser(userDTO);
+        CommonResponseDTO<UserLoginResponseDTO> response = new CommonResponseDTO<>("SUCCESS", "로그인 성공",
+                loginDTO, "", "", 0);
+
+        log.info("로그인 성공: email={}", userDTO.getEmail());
+        return ResponseEntity.ok(response);
+    }
 
 }

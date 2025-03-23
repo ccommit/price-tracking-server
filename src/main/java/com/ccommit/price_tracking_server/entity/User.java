@@ -39,7 +39,7 @@ public class User {
 
     @Column(name = "status", nullable = false)
     @Builder.Default
-    private Enum<UserStatus> status = UserStatus.active;
+    private Enum<UserStatus> status = UserStatus.ACTIVE;
 
     @Column(name = "email_verified", nullable = false)
     @Builder.Default

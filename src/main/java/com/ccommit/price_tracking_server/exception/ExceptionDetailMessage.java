@@ -16,7 +16,10 @@ public enum ExceptionDetailMessage {
     PASSWORD_MISMATCH("입력한 비밀번호와 확인 비밀번호가 일치하지 않습니다."),
     INVALID_USERNAME_FORMAT("닉네임은 4자 이상, 20자 이하의 영문자 또는 숫자만 포함할 수 있습니다."),
     INVALID_PHONE_FORMAT("휴대폰 번호는 010으로 시작하는 11자리 숫자여야 합니다."),
-    INVALID_EMAIL_FORMAT("이메일 형식이 잘못되었습니다. 유효한 이메일 주소를 입력해 주세요.");
+    INVALID_EMAIL_FORMAT("이메일 형식이 잘못되었습니다. 유효한 이메일 주소를 입력해 주세요."),
+    INVALID_PASSWORD("입력한 비밀번호가 올바르지 않습니다."),
+    USER_NOT_FOUND("입력한 이메일로 가입된 사용자가 없습니다. 이메일을 확인해주세요."),
+    USER_ACCOUNT_DISABLED("입력한 이메일에 해당하는 사용자 계정이 비활성화되었습니다. 고객 지원에 문의해주세요.");
 
     private final String message;
 

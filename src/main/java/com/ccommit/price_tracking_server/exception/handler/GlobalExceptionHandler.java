@@ -3,7 +3,7 @@ package com.ccommit.price_tracking_server.exception.handler;
 import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
 import com.ccommit.price_tracking_server.aop.PerformanceAspect;
 import com.ccommit.price_tracking_server.exception.ExceptionDetailMessage;
-import com.ccommit.price_tracking_server.exception.PasswordMismatchException;
+import com.ccommit.price_tracking_server.exception.PriceTrackingServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -51,12 +51,21 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(PasswordMismatchException.class)
-    public ResponseEntity<CommonResponseDTO<?>> handleRuntimeException(PasswordMismatchException ex) {
+    @ExceptionHandler({PriceTrackingServerException.class})
+    public ResponseEntity<CommonResponseDTO<?>> handlePriceTrackingServerException(PriceTrackingServerException ex) {
         CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>("Failure", ex.getMessage(),
                 null, ex.getErrorCode(), ExceptionDetailMessage.getExceptionMessage(ex.getErrorCode()),
                 0);
         log.error(errorResponse.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<CommonResponseDTO<?>> handleException(Exception ex) {
+        CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>("Failure", "서버 오류가 발생했습니다.",
+                null, "INTERNAL_SERVER_ERROR", ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"),
+                0);
+        log.error(errorResponse.toString());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }
