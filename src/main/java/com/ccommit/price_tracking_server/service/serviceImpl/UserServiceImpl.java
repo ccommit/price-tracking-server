@@ -11,9 +11,9 @@ import com.ccommit.price_tracking_server.exception.UserAccountDisableException;
 import com.ccommit.price_tracking_server.exception.UserNotFoundException;
 import com.ccommit.price_tracking_server.mapper.UserMapper;
 import com.ccommit.price_tracking_server.repository.UserRepository;
+import com.ccommit.price_tracking_server.security.JwtTokenProvider;
 import com.ccommit.price_tracking_server.service.UserService;
 import com.ccommit.price_tracking_server.utils.BcryptEncrypt;
-import com.ccommit.price_tracking_server.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         log.info("로그인 성공: userId={}, username={}", user.getId(), user.getUsername());
 
         // JWT 발급
-        String accessToken = JwtTokenProvider.generateAccessToken(user.getId(), user.getStatus());
+        String accessToken = JwtTokenProvider.generateAccessToken(user.getEmail(), user.getStatus());
         String refreshToken = JwtTokenProvider.generateRefreshToken(user.getId());
 
         String key = "refresh_token:" + user.getId();
@@ -78,4 +78,25 @@ public class UserServiceImpl implements UserService {
         return userMapper.convertToLoginDTO(accessToken, refreshToken);
     }
 
+    @Override
+    public UserProfileResponseDTO updateUser(String email, UserDTO userDTO) {
+        log.info("회원 정보 수정 시도: email={}", email);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+        log.debug("User 조회 완료: email={}", user.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setUsername(userDTO.getUsername());
+
+        userRepository.save(user);
+        log.info("회원 정보 수정 완료: userId={}, username={}", user.getId(), user.getUsername());
+
+        return userMapper.convertToProfileDTO(user);
+    }
+
+    @Override
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
 }

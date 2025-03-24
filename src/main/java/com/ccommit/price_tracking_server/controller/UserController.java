@@ -9,11 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @Log4j2
@@ -47,4 +45,15 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping
+    public ResponseEntity<CommonResponseDTO<UserProfileResponseDTO>> updateUser(@AuthenticationPrincipal String email, @RequestBody @Validated({UserDTO.Update.class}) UserDTO userDTO) {
+        log.info("회원 정보 수정 요청: email={}", email);
+
+        UserProfileResponseDTO updateDTO = userService.updateUser(email, userDTO);
+        CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>("SUCCESS", "회원 정보 수정 성공",
+                updateDTO, "", "", 0);
+
+        log.info("회원 정보 수정 성공: email={}", email);
+        return ResponseEntity.ok(response);
+    }
 }

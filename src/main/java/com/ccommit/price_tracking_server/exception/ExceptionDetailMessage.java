@@ -19,7 +19,13 @@ public enum ExceptionDetailMessage {
     INVALID_EMAIL_FORMAT("이메일 형식이 잘못되었습니다. 유효한 이메일 주소를 입력해 주세요."),
     INVALID_PASSWORD("입력한 비밀번호가 올바르지 않습니다."),
     USER_NOT_FOUND("입력한 이메일로 가입된 사용자가 없습니다. 이메일을 확인해주세요."),
-    USER_ACCOUNT_DISABLED("입력한 이메일에 해당하는 사용자 계정이 비활성화되었습니다. 고객 지원에 문의해주세요.");
+    USER_ACCOUNT_DISABLED("입력한 이메일에 해당하는 사용자 계정이 비활성화되었습니다. 고객 지원에 문의해주세요."),
+
+    // Security
+    TOKEN_EXPIRED("JWT 토큰이 만료되었습니다. 다시 로그인하여 새 토큰을 발급받아주세요."),
+    INVALID_TOKEN_FORMAT("제공된 JWT 토큰 형식이 올바르지 않습니다. 유효한 토큰을 제공해주세요."),
+    INVALID_SIGNATURE("제공된 JWT 토큰의 서명 검증에 실패했습니다. 유효한 토큰을 제공해주세요."),
+    UNAUTHORIZED("유효한 JWT 토큰이 필요합니다. 로그인 후 다시 시도해주세요.");
 
     private final String message;
 

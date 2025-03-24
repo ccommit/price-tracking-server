@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Log4j2
@@ -60,8 +61,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({RuntimeException.class, SQLException.class, NullPointerException.class})
     public ResponseEntity<CommonResponseDTO<?>> handleException(Exception ex) {
+
+        log.error("서버 오류 발생: {}", ex.getMessage(), ex);
         CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>("Failure", "서버 오류가 발생했습니다.",
                 null, "INTERNAL_SERVER_ERROR", ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"),
                 0);
