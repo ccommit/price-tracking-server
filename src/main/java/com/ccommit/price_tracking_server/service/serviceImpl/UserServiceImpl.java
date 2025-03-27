@@ -32,15 +32,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponseDTO registerUser(UserDTO userDTO) {
-        log.info("회원가입 시도: username={}, email={}", userDTO.getUsername(), userDTO.getEmail());
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
             log.warn("비밀번호 불일치: username={}, email={}", userDTO.getUsername(), userDTO.getEmail());
             throw new PasswordMismatchException();
         }
 
         User user = userMapper.convertToEntity(userDTO);
-        log.debug("User 변환 완료: {}", user);
-
         userRepository.save(user);
         log.info("회원 저장 완료: userId={}, username={}", user.getId(), user.getUsername());
 
@@ -49,11 +46,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginResponseDTO loginUser(UserDTO userDTO) {
-        log.info("로그인 시도: email={}", userDTO.getEmail());
-
         User user = userRepository.findByEmail(userDTO.getEmail())
                 .orElseThrow(UserNotFoundException::new);
-        log.debug("User 조회 완료: email={}", user.getEmail());
 
         if (user.getStatus() == UserStatus.INACTIVE) {
             log.warn("로그인 실패: 이상 유저 - email={}", userDTO.getEmail());
@@ -70,8 +64,8 @@ public class UserServiceImpl implements UserService {
         String refreshToken = JwtTokenProvider.generateRefreshToken(user.getId());
 
         String key = "refresh_token:" + user.getId();
-        // Refresh Token을 Redis에 저장 (유효기간 7일)
-        long expirationTimeInMillis = 7L * 24 * 60 * 60 * 1000; // 7일 후 밀리초로 계산
+        // Refresh Token을 Redis에 저장 (유효기간 30일)
+        long expirationTimeInMillis = 30L * 24 * 60 * 60 * 1000; // 30일 후 밀리초로 계산
         Duration duration = Duration.ofMillis(expirationTimeInMillis);
         redisTemplate.opsForValue().set(key, refreshToken, duration);
 
@@ -80,8 +74,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponseDTO updateUser(String email, UserDTO userDTO) {
-        log.info("회원 정보 수정 시도: email={}", email);
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         log.debug("User 조회 완료: email={}", user.getEmail());

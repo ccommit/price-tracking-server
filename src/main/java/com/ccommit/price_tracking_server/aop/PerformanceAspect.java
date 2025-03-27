@@ -14,6 +14,9 @@ import org.springframework.util.StopWatch;
 @Aspect
 @Component
 public class PerformanceAspect {
+    // 기준 시간은 200ms로 설정하였으며, 해당 시간을 초과하면 INFO 레벨로 로깅하여 병목 위치를 파악할 수 있도록 합니다.
+    // 기준은 Google 개발자 문서(https://developers.google.com/speed/docs/insights/Server)를 참고하였습니다.
+    private static final long THRESHOLD_TIME = 200;
 
     // @Around 어노테이션을 사용하여 메서드 실행 전후로 시간 측정을 함
     @Around("execution(* com.ccommit.price_tracking_server..*(..)) && " +
@@ -31,7 +34,10 @@ public class PerformanceAspect {
         String methodName = joinPoint.getSignature().getName();
         long millis = stopWatch.getTotalTimeMillis();
         float seconds = millis / 1000.0f;
-        log.info(methodName + " executed in " + seconds + " ms");
+        // 특정 임계값 이상인 경우에만 로그 기록
+        if (millis > THRESHOLD_TIME) {
+            log.info("{} executed in {} ms", methodName, seconds);  // 임계값 초과시 로그 기록
+        }
 
         // response에 실행 시간 정보 추가
         if (result instanceof ResponseEntity<?>) {

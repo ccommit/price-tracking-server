@@ -18,7 +18,7 @@ public class UserDTO {
     @NotBlank(groups = {SignUp.class, Update.class})
     private String username;
 
-    @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+    @Email(regexp = "^[A-Za-z0-9+_.-]{5,}@[A-Za-z0-9.-]{3,}\\.[A-Za-z]{2,}$",
             groups = {SignUp.class, Login.class})
     @NotBlank(groups = {SignUp.class, Login.class})
     private String email;

@@ -19,7 +19,7 @@ public class JwtTokenValidator {
     private static final String SECRET_KEY = SecretKeyProvider.getInstance().getSecretKey();
 
     // JWT 유효성 검사
-    public Claims validateAndGetClaims(String type, String token) {
+    public Claims validateAndGetClaims(String token) {
         try {
             // JwtParser 생성
             Claims claims = Jwts.parser()
@@ -29,7 +29,7 @@ public class JwtTokenValidator {
                     .getPayload();
 
             // 토큰이 만료되지 않았는지 체크
-            if (type.equals("ACCESS") && isTokenExpired(claims)) {
+            if (isTokenExpired(claims)) {
                 throw new TokenExpiredException();
             }
 
