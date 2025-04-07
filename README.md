@@ -91,4 +91,4 @@
 - 해외 시장 확대: 다국어 지원 및 글로벌 쇼핑몰(아마존, 이베이 등)과 연계하여 글로벌 가격 비교 기능 추가
 
 # ERD
-![PriceTracker_ERD](https://github.com/user-attachments/assets/81f1870b-33f7-4324-a337-6b0689fd501d)
+![PriceTracker_ERD](https://github.com/user-attachments/assets/c8410b09-7f85-4de2-bcfd-584abd89838e)
