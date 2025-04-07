@@ -35,6 +35,9 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.convertToEntity(userDTO);
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new DuplicateEmailException();
+        }
         userRepository.save(user);
         log.info("회원 저장 완료: userId={}, username={}", user.getId(), user.getUsername());
 
@@ -92,9 +95,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkNickname(String nickname) {
         Boolean isExist = userRepository.existsByUsername(nickname);
-        if(isExist){
+        if (isExist) {
             throw new UserNameTakenException();
         }
+        return true;
+    }
+
+    @Override
+    public Boolean logoutUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        String key = "refresh_token:" + user.getId();
+        Boolean deleted = redisTemplate.delete(key);
+        if (!deleted) {
+            log.warn("로그아웃 실패: Refresh Token 삭제 실패 - userId={}", user.getId());
+            throw new TokenNotFoundException();
+        }
+        log.info("로그아웃 성공: userId={}, username={}", user.getId(), user.getUsername());
+        return true;
+    }
+
+    @Override
+    public Boolean deleteUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+        log.debug("User 조회 완료: email={}", user.getEmail());
+
+        user.setStatus(UserStatus.INACTIVE);
+        userRepository.save(user);
+        log.info("회원 탈퇴 완료: userId={}, username={}", user.getId(), user.getUsername());
+        this.logoutUser(email); // 로그아웃 처리, Redis에서 Refresh Token 삭제
         return true;
     }
 }

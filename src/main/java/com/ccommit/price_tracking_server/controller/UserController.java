@@ -68,10 +68,26 @@ public class UserController {
     @GetMapping("/username-check")
     public ResponseEntity<CommonResponseDTO<Boolean>> nicknameCheck(@RequestParam("userName") String userName) {
         log.info("닉네임 중복 확인 요청: nickname={}", userName);
-
         CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "닉네임 중복 체크 성공",
                 userService.checkNickname(userName), "", "", 0);
+        return ResponseEntity.ok(response);
+    }
 
+    @PostMapping("/logout")
+    @CheckToken(roles = {UserStatus.ACTIVE})
+    public ResponseEntity<CommonResponseDTO<Boolean>> logout(String email) {
+        log.info("로그아웃 요청");
+        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "로그아웃 성공",
+                userService.logoutUser(email), "", "", 0);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping
+    @CheckToken(roles = {UserStatus.ACTIVE})
+    public ResponseEntity<CommonResponseDTO<Boolean>> deleteUser(String email) {
+        log.info("회원 탈퇴 요청: email={}", EmailMaskingUtil.maskEmail(email));
+        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "회원 탈퇴 성공",
+                userService.deleteUser(email), "", "", 0);
         return ResponseEntity.ok(response);
     }
 }

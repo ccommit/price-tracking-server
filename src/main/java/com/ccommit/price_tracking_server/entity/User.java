@@ -18,15 +18,15 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // 자동 증가 키
-    @Column(name = "id")
+    @Column(name = "user_id")
     private Long id;
 
-    @Size(min = 3, max = 50)
-    @Column(name = "username", nullable = false, length = 50)
+    @Size(min = 4, max = 20)
+    @Column(name = "username", nullable = false, length = 20)
     private String username;
 
     @Email
-    @Column(name = "email", nullable = false, length = 100, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Size(min = 8, max = 100)
@@ -39,10 +39,11 @@ public class User {
 
     @Column(name = "status", nullable = false)
     @Builder.Default
-    private Enum<UserStatus> status = UserStatus.ACTIVE;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "email_verified", nullable = false)
     @Builder.Default
-    private Boolean email_verified = false;
+    private Boolean emailVerified = false;
 
 }

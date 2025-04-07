@@ -16,4 +16,8 @@ public interface UserService {
     User getUserById(Long userId);
 
     Boolean checkNickname(String nickname);
+
+    Boolean logoutUser(String email);
+
+    Boolean deleteUser(String email);
 }

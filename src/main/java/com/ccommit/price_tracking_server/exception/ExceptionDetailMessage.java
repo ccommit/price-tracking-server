@@ -22,6 +22,7 @@ public enum ExceptionDetailMessage {
     USER_NOT_FOUND("입력한 이메일로 가입된 사용자가 없습니다. 이메일을 확인해주세요."),
     USER_ACCOUNT_DISABLED("입력한 이메일에 해당하는 사용자 계정이 비활성화되었습니다. 고객 지원에 문의해주세요."),
     USERNAME_TAKEN("이미 사용 중인 닉네임입니다."),
+    DUPLICATE_EMAIL("이미 사용 중인 이메일입니다."),
 
     // Security
     TOKEN_EXPIRED("JWT 토큰이 만료되었습니다. 다시 로그인하여 새 토큰을 발급받아주세요."),
@@ -30,7 +31,8 @@ public enum ExceptionDetailMessage {
     UNAUTHORIZED("유효한 JWT 토큰이 필요합니다. 로그인 후 다시 시도해주세요."),
     ROLE_ACCESS_DENIED("해당 리소스에 접근할 권한이 없습니다."),
     INVALID_REFRESH_TOKEN("유효하지 않은 리프레시 토큰입니다. 제공된 리프레시 토큰이 Redis에 저장된 토큰과 일치하지 않습니다. " +
-            "유효한 리프레시 토큰을 사용해주세요.");
+            "유효한 리프레시 토큰을 사용해주세요."),
+    TOKEN_NOT_FOUND("제공된 JWT 토큰이 Redis에 존재하지 않습니다. 유효한 토큰을 사용해주세요.");
 
     private final String message;
 
