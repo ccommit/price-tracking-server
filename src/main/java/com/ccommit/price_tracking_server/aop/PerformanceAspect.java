@@ -36,7 +36,7 @@ public class PerformanceAspect {
         float seconds = millis / 1000.0f;
         // 특정 임계값 이상인 경우에만 로그 기록
         if (millis > THRESHOLD_TIME) {
-            log.info("{} executed in {} ms", methodName, seconds);  // 임계값 초과시 로그 기록
+            log.info("{} executed in {} seconds", methodName, seconds);  // 임계값 초과시 로그 기록
         }
 
         // response에 실행 시간 정보 추가

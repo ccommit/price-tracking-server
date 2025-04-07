@@ -14,4 +14,6 @@ public interface UserService {
     UserProfileResponseDTO updateUser(String email, UserDTO userDTO);
 
     User getUserById(Long userId);
+
+    Boolean checkNickname(String nickname);
 }

@@ -21,6 +21,7 @@ public enum ExceptionDetailMessage {
     INVALID_PASSWORD("입력한 비밀번호가 올바르지 않습니다."),
     USER_NOT_FOUND("입력한 이메일로 가입된 사용자가 없습니다. 이메일을 확인해주세요."),
     USER_ACCOUNT_DISABLED("입력한 이메일에 해당하는 사용자 계정이 비활성화되었습니다. 고객 지원에 문의해주세요."),
+    USERNAME_TAKEN("이미 사용 중인 닉네임입니다."),
 
     // Security
     TOKEN_EXPIRED("JWT 토큰이 만료되었습니다. 다시 로그인하여 새 토큰을 발급받아주세요."),

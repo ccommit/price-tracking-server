@@ -5,10 +5,7 @@ import com.ccommit.price_tracking_server.DTO.UserLoginResponseDTO;
 import com.ccommit.price_tracking_server.DTO.UserProfileResponseDTO;
 import com.ccommit.price_tracking_server.entity.User;
 import com.ccommit.price_tracking_server.enums.UserStatus;
-import com.ccommit.price_tracking_server.exception.InvalidPasswordException;
-import com.ccommit.price_tracking_server.exception.PasswordMismatchException;
-import com.ccommit.price_tracking_server.exception.UserAccountDisableException;
-import com.ccommit.price_tracking_server.exception.UserNotFoundException;
+import com.ccommit.price_tracking_server.exception.*;
 import com.ccommit.price_tracking_server.mapper.UserMapper;
 import com.ccommit.price_tracking_server.repository.UserRepository;
 import com.ccommit.price_tracking_server.security.JwtTokenProvider;
@@ -90,5 +87,14 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Boolean checkNickname(String nickname) {
+        Boolean isExist = userRepository.existsByUsername(nickname);
+        if(isExist){
+            throw new UserNameTakenException();
+        }
+        return true;
     }
 }

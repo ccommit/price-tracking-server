@@ -65,4 +65,13 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/username-check")
+    public ResponseEntity<CommonResponseDTO<Boolean>> nicknameCheck(@RequestParam("userName") String userName) {
+        log.info("닉네임 중복 확인 요청: nickname={}", userName);
+
+        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "닉네임 중복 체크 성공",
+                userService.checkNickname(userName), "", "", 0);
+
+        return ResponseEntity.ok(response);
+    }
 }
