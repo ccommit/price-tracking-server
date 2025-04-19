@@ -1,0 +1,53 @@
+@startuml
+title "Product Tracking Weekly"
+
+note left of Scheduler
+  스케줄러는 매주 실행됨
+  (예: cron = "0 0 0 * * 0")
+  데이터는 1주 단위로 가공됨
+end note
+
+actor Scheduler
+participant "WeeklyBatchJob" as WeeklyBatch
+participant "ItemReader (MySQL DB)" as Reader
+participant "ItemProcessor (Service)" as Processor
+participant "ItemWriter (Repository)" as Writer
+database "MySQL Database" as MySQLDB
+
+loop 매주마다
+    Scheduler -> WeeklyBatch : 배치 잡 실행 요청
+    activate WeeklyBatch
+
+    WeeklyBatch -> Reader : 상품 데이터 읽기 (1주 단위)
+    activate Reader
+    Reader -> MySQLDB : SELECT * FROM products WHERE 날짜 BETWEEN 지난주 첫째 날 AND 지난주 마지막 날
+    MySQLDB --> Reader : 상품 데이터 반환
+    Reader --> WeeklyBatch : 상품 목록 반환
+    deactivate Reader
+
+    WeeklyBatch -> Processor : 상품별 주간 데이터 가공 처리
+    activate Processor
+    Processor -> Processor : 상품별 집계 및 데이터 변환
+    note right of Processor
+      1주 동안의 데이터를 가공하여 상품별로 집계
+      (예: 주간 최대 가격, 주간 최소 가격, 주간 평균 가격, 주간 리뷰 점수)
+    end note
+    Processor --> WeeklyBatch : 변환된 데이터 반환
+    deactivate Processor
+
+    WeeklyBatch -> Writer : 가공된 데이터 저장 요청
+    activate Writer
+    Writer -> MySQLDB : INSERT INTO weekly_report (주간 집계 데이터)
+    MySQLDB --> Writer : 저장 성공 응답
+    Writer --> WeeklyBatch : 저장 성공 수 반환
+    deactivate Writer
+
+    WeeklyBatch --> Scheduler : 배치 처리 완료 (예: 총 저장된 주간 보고서 10건)
+    deactivate WeeklyBatch
+end loop
+
+note right of MySQLDB
+  데이터는 3년 동안 보관되며, 이후 아카이브 또는 삭제됨.
+end note
+
+@enduml
