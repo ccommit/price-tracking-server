@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
                 // NotBlank 오류 처리
                 CommonResponseDTO<?> errorResponse = validationErrorHandler.handleFieldError(error);
                 log.error(errorResponse.toString());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+                return ResponseEntity.ok(errorResponse);
             }
         }
 
@@ -39,12 +39,11 @@ public class GlobalExceptionHandler {
             FieldError error = fieldErrors.get(0); // 첫 번째 오류를 처리
             CommonResponseDTO<?> errorResponse = validationErrorHandler.handleFieldError(error);
             log.error(errorResponse.toString());
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
+            return ResponseEntity.ok(errorResponse);
         }
 
         // 만약 FieldError가 없다면 기본 오류 반환
-        CommonResponseDTO<?> defaultErrorResponse = new CommonResponseDTO<>("Failure",
-                "잘못된 요청입니다.", null, "INVALID_REQUEST", "", 0);
+        CommonResponseDTO<?> defaultErrorResponse = new CommonResponseDTO<>(null, "INVALID_REQUEST", "", 0);
         log.error(defaultErrorResponse.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(defaultErrorResponse);
 
@@ -52,20 +51,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({PriceTrackingServerException.class})
     public ResponseEntity<CommonResponseDTO<?>> handlePriceTrackingServerException(PriceTrackingServerException ex) {
-        CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>("Failure", ex.getMessage(),
-                null, ex.getErrorCode(), ExceptionDetailMessage.getExceptionMessage(ex.getErrorCode()),
-                0);
+        CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>(null,
+                ex.getErrorCode(), ExceptionDetailMessage.getExceptionMessage(ex.getErrorCode()), 0);
         log.error(errorResponse.toString());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.ok(errorResponse);
     }
 
     @ExceptionHandler({RuntimeException.class, SQLException.class, NullPointerException.class})
     public ResponseEntity<CommonResponseDTO<?>> handleException(Exception ex) {
 
         log.error("서버 오류 발생: {}", ex.getMessage(), ex);
-        CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>("Failure", "서버 오류가 발생했습니다.",
-                null, "INTERNAL_SERVER_ERROR", ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"),
-                0);
+        CommonResponseDTO<?> errorResponse = new CommonResponseDTO<>(null,
+                "INTERNAL_SERVER_ERROR", ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"), 0);
         log.error(errorResponse.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

@@ -22,7 +22,7 @@ public class ValidationErrorHandler {
         if (isNotBlankError(error)) {
             // 필수 필드 누락 오류 처리
             exceptionCode = "MISSING_REQUIRED_FIELD";
-            errorResponse = new CommonResponseDTO<>("Failure", "필수 필드가 누락되었습니다.",
+            errorResponse = new CommonResponseDTO<>(
                     null, exceptionCode, ExceptionDetailMessage.getExceptionMessage(exceptionCode),
                     0);
 
@@ -32,8 +32,7 @@ public class ValidationErrorHandler {
         } else {
             // 형식 오류 처리
             exceptionCode = "INVALID_" + error.getField().toUpperCase() + "_FORMAT";
-            String errorMessage = MessageFormat.format("{0} 형식이 올바르지 않습니다.", error.getField());
-            errorResponse = new CommonResponseDTO<>("Failure", errorMessage, null, exceptionCode,
+            errorResponse = new CommonResponseDTO<>(null, exceptionCode,
                     ExceptionDetailMessage.getExceptionMessage(exceptionCode), 0);
         }
 

@@ -28,8 +28,7 @@ public class UserController {
         log.info("회원가입 요청: email={}", EmailMaskingUtil.maskEmail(userDTO.getEmail()));
 
         UserProfileResponseDTO signUpDTO = userService.registerUser(userDTO);
-        CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>("SUCCESS", "회원가입 성공",
-                signUpDTO, "", "", 0);
+        CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>(signUpDTO, "", "", 0);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -39,8 +38,7 @@ public class UserController {
         log.info("로그인 요청: email={}", EmailMaskingUtil.maskEmail(userDTO.getEmail()));
 
         UserLoginResponseDTO loginDTO = userService.loginUser(userDTO);
-        CommonResponseDTO<UserLoginResponseDTO> response = new CommonResponseDTO<>("SUCCESS", "로그인 성공",
-                loginDTO, "", "", 0);
+        CommonResponseDTO<UserLoginResponseDTO> response = new CommonResponseDTO<>(loginDTO, "", "", 0);
 
         return ResponseEntity.ok(response);
     }
@@ -51,8 +49,7 @@ public class UserController {
         log.info("회원 정보 수정 요청: email={}", EmailMaskingUtil.maskEmail(email));
 
         UserProfileResponseDTO updateDTO = userService.updateUser(email, userDTO);
-        CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>("SUCCESS", "회원 정보 수정 성공",
-                updateDTO, "", "", 0);
+        CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>(updateDTO, "", "", 0);
 
         return ResponseEntity.ok(response);
     }
@@ -68,8 +65,7 @@ public class UserController {
     @GetMapping("/username-check")
     public ResponseEntity<CommonResponseDTO<Boolean>> nicknameCheck(@RequestParam("userName") String userName) {
         log.info("닉네임 중복 확인 요청: nickname={}", userName);
-        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "닉네임 중복 체크 성공",
-                userService.checkNickname(userName), "", "", 0);
+        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>(userService.checkNickname(userName), "", "", 0);
         return ResponseEntity.ok(response);
     }
 
@@ -77,8 +73,7 @@ public class UserController {
     @CheckToken(roles = {UserStatus.ACTIVE})
     public ResponseEntity<CommonResponseDTO<Boolean>> logout(String email) {
         log.info("로그아웃 요청");
-        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "로그아웃 성공",
-                userService.logoutUser(email), "", "", 0);
+        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>(userService.logoutUser(email), "", "", 0);
         return ResponseEntity.ok(response);
     }
 
@@ -86,8 +81,7 @@ public class UserController {
     @CheckToken(roles = {UserStatus.ACTIVE})
     public ResponseEntity<CommonResponseDTO<Boolean>> deleteUser(String email) {
         log.info("회원 탈퇴 요청: email={}", EmailMaskingUtil.maskEmail(email));
-        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>("SUCCESS", "회원 탈퇴 성공",
-                userService.deleteUser(email), "", "", 0);
+        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>(userService.deleteUser(email), "", "", 0);
         return ResponseEntity.ok(response);
     }
 }

@@ -11,8 +11,8 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private static final String SECRET_KEY = SecretKeyProvider.getInstance().getSecretKey(); // JWT 서명에 사용할 비밀 키
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24시간
-    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30; // 1개월
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24; // 24시간
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 30; // 1개월
 
     // Access Token 생성 메서드
     public static String generateAccessToken(String email, Enum<UserStatus> roles) {

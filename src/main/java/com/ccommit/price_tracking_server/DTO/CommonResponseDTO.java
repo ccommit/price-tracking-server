@@ -7,8 +7,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public class CommonResponseDTO<T> {
-    private String status;
-    private String message;
     private T data;
     private String errorCode;
     private String errorDetails;
@@ -22,9 +20,7 @@ public class CommonResponseDTO<T> {
         this.errorDetails = errorDetails;
     }
 
-    public CommonResponseDTO(String status, String message, T data, String errorCode, String errorDetails, float totalRequestTime) {
-        this.status = status;
-        this.message = message;
+    public CommonResponseDTO(T data, String errorCode, String errorDetails, float totalRequestTime) {
         this.data = data;
         this.errorCode = errorCode;
         this.errorDetails = errorDetails;

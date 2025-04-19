@@ -42,8 +42,7 @@ public class VerifyJwtAndCheckRole {
         if(claims.get("token_type", String.class).equals("REFRESH") && isTokenInRedis(claims, token)) {
             User user = userService.getUserById(Long.parseLong(claims.getSubject()));
             String newAccessToken = JwtTokenProvider.generateAccessToken(user.getEmail(), user.getStatus());
-            return ResponseEntity.ok(new CommonResponseDTO<>("SUCCESS", "토큰 재발급 성공", newAccessToken,
-                    "", "", 0));
+            return ResponseEntity.ok(new CommonResponseDTO<>(newAccessToken, "", "", 0));
         }
         String email = claims.getSubject();
         UserStatus userStatus = UserStatus.valueOf(claims.get("roles", String.class).toUpperCase());

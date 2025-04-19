@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class PasswordMismatchException extends PriceTrackingServerException {
     public PasswordMismatchException() {
-        super("비밀번호가 일치하지 않습니다.", "PASSWORD_MISMATCH");
+        super("PASSWORD_MISMATCH");
     }
 }

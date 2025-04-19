@@ -6,8 +6,7 @@ import lombok.Getter;
 public class PriceTrackingServerException extends RuntimeException{
     private final String errorCode;
 
-    public PriceTrackingServerException(String message, String errorCode) {
-        super(message);
+    public PriceTrackingServerException(String errorCode) {
         this.errorCode = errorCode;
     }
 }

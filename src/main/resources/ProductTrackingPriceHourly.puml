@@ -1,0 +1,152 @@
+@startuml
+title "Product Tracking Hourly"
+
+actor Scheduler
+participant "BatchJob" as Batch
+participant "ProcessLogManager" as LogManager
+participant "ItemReader (Google API / JSON)" as Reader
+participant "ItemProcessor(ProducServicet and NotificationService)" as Processor
+participant "ItemWriter (Repository)" as Writer
+participant "Log File (JSON)" as LogFile
+database "MySQL Database" as MySQLDB
+participant "Google API" as GoogleAPI
+
+note left of Scheduler
+  매 시간마다 실행되는 스케줄러 (cron = "0 0 * * * *")
+end note
+
+note right of Scheduler
+  @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 60000, multiplier = 2))
+  최대 4회까지 재시도, 실패 시 @Recover로 예외 복구 및 로그 기록
+end note
+
+loop 매 시간마다
+    Scheduler -> LogManager : 마지막 성공 시간 조회
+    activate LogManager
+
+    LogManager -> LogFile : 마지막 성공 기록 조회
+    activate LogFile
+
+    LogFile --> LogManager : 마지막 처리 시간 반환
+    deactivate LogFile
+
+    alt 누락된 로그 존재
+        LogManager -> Batch : 누락 로그 재처리 요청
+    else 정상 배치 실행
+        LogManager -> Batch : 현재 시간 기준 배치 실행
+        deactivate LogManager
+        deactivate Scheduler
+    end alt
+    activate Batch
+
+    loop chunk 단위 반복
+        alt 실패 로그 존재
+            Batch -> LogManager : 실패 로그 요청
+            activate LogManager
+
+            LogManager -> LogFile : 실패 JSON 조회
+            activate LogFile
+
+            LogFile --> LogManager : 실패 데이터 반환
+            deactivate LogFile
+            LogManager --> Reader : 실패 항목 전달
+            deactivate LogManager
+            activate Reader
+        else 정상 흐름
+            Batch -> Reader : 상품 목록 요청
+            activate Reader
+
+            Reader -> GoogleAPI : 상품 상세 요청
+            activate GoogleAPI
+
+            GoogleAPI --> Reader : 상품 데이터 응답
+            deactivate GoogleAPI
+        end alt
+
+        Reader --> Batch : 상품 목록 반환
+        deactivate Reader
+
+        deactivate Reader
+
+        Batch -> Processor : 카테고리 분류
+        activate Processor
+
+        Processor --> Batch : 처리된 데이터 반환
+        deactivate Processor
+
+        Batch -> Writer : DB 저장 요청
+        activate Writer
+
+        Writer -> MySQLDB : INSERT INTO products
+        activate MySQLDB
+
+        alt 저장 성공
+            MySQLDB --> Writer : 저장 완료
+        else 저장 실패
+            MySQLDB --> Writer : 에러 발생
+            deactivate MySQLDB
+        end alt
+
+        Writer-> Batch : 저장 결과 반환
+        deactivate Writer
+
+        Batch -> Processor : 저장한 상품 결과 반환(알림을 위해 Products 전달)
+        activate Processor
+
+        Processor -> MySQLDB : 저장한 상품 ID로 알림 설정 조회
+        activate MySQLDB
+
+        MySQLDB --> Processor : 알림 설정 데이터 반환
+        deactivate MySQLDB
+
+        Processor -> "AWS SES" : 알림 조건 비교 및 전송
+        activate "AWS SES"
+
+        "AWS SES" --> Batch : 알림 전송 완료
+        deactivate "AWS SES"
+        deactivate Processor
+    end loop
+
+    Batch -> LogManager : 처리 결과 전달
+    activate LogManager
+
+    LogManager -> LogFile : 처리 결과 기록
+    activate LogFile
+
+    LogFile --> LogManager : 기록 완료
+    deactivate LogFile
+
+    LogManager --> Batch : 로그 기록 완료
+    deactivate LogManager
+
+    Batch --> Scheduler : 배치 완료
+    deactivate Batch
+end loop
+
+alt 재시도 실패 (@Recover)
+    Batch -> LogManager : 예외 처리 요청
+    activate LogManager
+
+    LogManager -> LogFile : 실패 로그(JSON) 저장
+    activate LogFile
+
+    LogFile --> LogManager : 저장 완료
+    deactivate LogFile
+
+    LogManager --> Batch : 실패 처리 완료
+    deactivate LogManager
+end alt
+
+note right of LogFile
+  - 실패는 JSON 형식으로 로그 저장됨
+  - 해당 "Google API"에서 읽어온 상품 데이터를 Json으로 저장
+  - @Recover을 사용하여 재처리 횟수 초과시 분리 저장
+  - {"timestamp": "...", "data": ..., "reason": "..."}
+end note
+
+note right of MySQLDB
+  - DB 데이터는 3년간 보관됨
+  - 이후 아카이브 또는 삭제됨
+end note
+
+@enduml
