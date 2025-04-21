@@ -1,15 +1,15 @@
 @startuml
-title "Product Tracking Hourly"
+title "Product Tracking Hourly with RabbitMQ"
 
 actor Scheduler
 participant "BatchJob" as Batch
-participant "ProcessLogManager" as LogManager
 participant "ItemReader (Google API / JSON)" as Reader
-participant "ItemProcessor(ProducServicet and NotificationService)" as Processor
+participant "ItemProcessor(ProductService + NotificationService)" as Processor
 participant "ItemWriter (Repository)" as Writer
-participant "Log File (JSON)" as LogFile
+participant "RabbitMQ" as MQ
 database "MySQL Database" as MySQLDB
 participant "Google API" as GoogleAPI
+participant "AWS SES" as SES
 
 note left of Scheduler
   매 시간마다 실행되는 스케줄러 (cron = "0 0 * * * *")
@@ -17,40 +17,23 @@ end note
 
 note right of Scheduler
   @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 60000, multiplier = 2))
-  최대 4회까지 재시도, 실패 시 @Recover로 예외 복구 및 로그 기록
+  실패 시 @Recover로 JSON 메시지를 RabbitMQ에 전송
 end note
 
 loop 매 시간마다
-    Scheduler -> LogManager : 마지막 성공 시간 조회
-    activate LogManager
-
-    LogManager -> LogFile : 마지막 성공 기록 조회
-    activate LogFile
-
-    LogFile --> LogManager : 마지막 처리 시간 반환
-    deactivate LogFile
-
-    alt 누락된 로그 존재
-        LogManager -> Batch : 누락 로그 재처리 요청
-    else 정상 배치 실행
-        LogManager -> Batch : 현재 시간 기준 배치 실행
-        deactivate LogManager
-        deactivate Scheduler
+    Scheduler -> MQ : 실패 메시지 존재 여부 확인
+    activate MQ
+    alt 메시지 있음
+        MQ -> Batch : 실패 메시지 전달
+        deactivate MQ
+    else 메시지 없음
+        Scheduler -> Batch : 정기 상품 트래킹 실행
     end alt
     activate Batch
 
     loop chunk 단위 반복
-        alt 실패 로그 존재
-            Batch -> LogManager : 실패 로그 요청
-            activate LogManager
-
-            LogManager -> LogFile : 실패 JSON 조회
-            activate LogFile
-
-            LogFile --> LogManager : 실패 데이터 반환
-            deactivate LogFile
-            LogManager --> Reader : 실패 항목 전달
-            deactivate LogManager
+        alt 실패 메시지 처리
+            Batch -> Reader : 메시지 기반 상품 요청
             activate Reader
         else 정상 흐름
             Batch -> Reader : 상품 목록 요청
@@ -84,69 +67,47 @@ loop 매 시간마다
             MySQLDB --> Writer : 저장 완료
         else 저장 실패
             MySQLDB --> Writer : 에러 발생
-            deactivate MySQLDB
         end alt
 
-        Writer-> Batch : 저장 결과 반환
+        deactivate MySQLDB
+        Writer --> Batch : 저장 결과 반환
         deactivate Writer
 
-        Batch -> Processor : 저장한 상품 결과 반환(알림을 위해 Products 전달)
+        Batch -> Processor : 저장한 상품 결과 전달 (알림을 위해)
         activate Processor
 
         Processor -> MySQLDB : 저장한 상품 ID로 알림 설정 조회
         activate MySQLDB
 
-        MySQLDB --> Processor : 알림 설정 데이터 반환
+        MySQLDB --> Processor : 알림 설정 반환
         deactivate MySQLDB
 
-        Processor -> "AWS SES" : 알림 조건 비교 및 전송
-        activate "AWS SES"
+        Processor -> SES : 조건 비교 후 이메일 발송
+        activate SES
 
-        "AWS SES" --> Batch : 알림 전송 완료
-        deactivate "AWS SES"
+        SES --> Batch : 발송 완료
         deactivate Processor
+        deactivate SES
     end loop
 
-    Batch -> LogManager : 처리 결과 전달
-    activate LogManager
-
-    LogManager -> LogFile : 처리 결과 기록
-    activate LogFile
-
-    LogFile --> LogManager : 기록 완료
-    deactivate LogFile
-
-    LogManager --> Batch : 로그 기록 완료
-    deactivate LogManager
+    alt 재시도 실패 (@Recover)
+        Batch -> MQ : 실패 항목 JSON 메시지 전송
+        note right of MQ
+          - 실패 항목은 다음 형식으로 큐에 저장됨:
+          {
+            "timestamp": "...",
+            "data": {...},
+            "reason": "..."
+          }
+        end note
+    end alt
 
     Batch --> Scheduler : 배치 완료
     deactivate Batch
 end loop
 
-alt 재시도 실패 (@Recover)
-    Batch -> LogManager : 예외 처리 요청
-    activate LogManager
-
-    LogManager -> LogFile : 실패 로그(JSON) 저장
-    activate LogFile
-
-    LogFile --> LogManager : 저장 완료
-    deactivate LogFile
-
-    LogManager --> Batch : 실패 처리 완료
-    deactivate LogManager
-end alt
-
-note right of LogFile
-  - 실패는 JSON 형식으로 로그 저장됨
-  - 해당 "Google API"에서 읽어온 상품 데이터를 Json으로 저장
-  - @Recover을 사용하여 재처리 횟수 초과시 분리 저장
-  - {"timestamp": "...", "data": ..., "reason": "..."}
-end note
-
 note right of MySQLDB
   - DB 데이터는 3년간 보관됨
   - 이후 아카이브 또는 삭제됨
 end note
-
 @enduml
