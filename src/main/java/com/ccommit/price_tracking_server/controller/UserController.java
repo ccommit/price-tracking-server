@@ -10,7 +10,6 @@ import com.ccommit.price_tracking_server.service.UserService;
 import com.ccommit.price_tracking_server.utils.EmailMaskingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class UserController {
         UserProfileResponseDTO signUpDTO = userService.registerUser(userDTO);
         CommonResponseDTO<UserProfileResponseDTO> response = new CommonResponseDTO<>(signUpDTO, "", "", 0);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

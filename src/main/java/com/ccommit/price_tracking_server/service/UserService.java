@@ -4,7 +4,9 @@ import com.ccommit.price_tracking_server.DTO.UserDTO;
 import com.ccommit.price_tracking_server.DTO.UserLoginResponseDTO;
 import com.ccommit.price_tracking_server.DTO.UserProfileResponseDTO;
 import com.ccommit.price_tracking_server.entity.User;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface UserService {
 
     UserProfileResponseDTO registerUser(UserDTO userDTO);
