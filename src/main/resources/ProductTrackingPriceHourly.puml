@@ -1,0 +1,113 @@
+@startuml
+title "Product Tracking Hourly with RabbitMQ"
+
+actor Scheduler
+participant "BatchJob" as Batch
+participant "ItemReader (Google API / JSON)" as Reader
+participant "ItemProcessor(ProductService + NotificationService)" as Processor
+participant "ItemWriter (Repository)" as Writer
+participant "RabbitMQ" as MQ
+database "MySQL Database" as MySQLDB
+participant "Google API" as GoogleAPI
+participant "AWS SES" as SES
+
+note left of Scheduler
+  매 시간마다 실행되는 스케줄러 (cron = "0 0 * * * *")
+end note
+
+note right of Scheduler
+  @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 60000, multiplier = 2))
+  실패 시 @Recover로 JSON 메시지를 RabbitMQ에 전송
+end note
+
+loop 매 시간마다
+    Scheduler -> MQ : 실패 메시지 존재 여부 확인
+    activate MQ
+    alt 메시지 있음
+        MQ -> Batch : 실패 메시지 전달
+        deactivate MQ
+    else 메시지 없음
+        Scheduler -> Batch : 정기 상품 트래킹 실행
+    end alt
+    activate Batch
+
+    loop chunk 단위 반복
+        alt 실패 메시지 처리
+            Batch -> Reader : 메시지 기반 상품 요청
+            activate Reader
+        else 정상 흐름
+            Batch -> Reader : 상품 목록 요청
+            activate Reader
+
+            Reader -> GoogleAPI : 상품 상세 요청
+            activate GoogleAPI
+
+            GoogleAPI --> Reader : 상품 데이터 응답
+            deactivate GoogleAPI
+        end alt
+
+        Reader --> Batch : 상품 목록 반환
+        deactivate Reader
+
+        deactivate Reader
+
+        Batch -> Processor : 카테고리 분류
+        activate Processor
+
+        Processor --> Batch : 처리된 데이터 반환
+        deactivate Processor
+
+        Batch -> Writer : DB 저장 요청
+        activate Writer
+
+        Writer -> MySQLDB : INSERT INTO products
+        activate MySQLDB
+
+        alt 저장 성공
+            MySQLDB --> Writer : 저장 완료
+        else 저장 실패
+            MySQLDB --> Writer : 에러 발생
+        end alt
+
+        deactivate MySQLDB
+        Writer --> Batch : 저장 결과 반환
+        deactivate Writer
+
+        Batch -> Processor : 저장한 상품 결과 전달 (알림을 위해)
+        activate Processor
+
+        Processor -> MySQLDB : 저장한 상품 ID로 알림 설정 조회
+        activate MySQLDB
+
+        MySQLDB --> Processor : 알림 설정 반환
+        deactivate MySQLDB
+
+        Processor -> SES : 조건 비교 후 이메일 발송
+        activate SES
+
+        SES --> Batch : 발송 완료
+        deactivate Processor
+        deactivate SES
+    end loop
+
+    alt 재시도 실패 (@Recover)
+        Batch -> MQ : 실패 항목 JSON 메시지 전송
+        note right of MQ
+          - 실패 항목은 다음 형식으로 큐에 저장됨:
+          {
+            "timestamp": "...",
+            "data": {...},
+            "reason": "..."
+          }
+        end note
+    end alt
+
+    Batch --> Scheduler : 배치 완료
+    deactivate Batch
+end loop
+
+note right of MySQLDB
+  - DB 데이터는 3년간 보관됨
+  - 이후 아카이브 또는 삭제됨
+end note
+@enduml

@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.9'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.ccommit'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    /***
+     * Spring Boot에는 기본적으로 logback이 로깅 라이브러리로 설정되어 있기 때문에,
+     * Log4j2를 사용하려면 logback 의존성을 제거하고 Log4j2 관련 의존성만 추가해야 합니다.
+     * Log4j2는 비동기 로깅을 사용할 수 있도록 지원하며, 비동기 로깅을 사용하면 로그 메시지를 별도의 쓰레드에서 처리하게 되어,
+     * 메인 애플리케이션의 성능에 미치는 영향을 최소화할 수 있습니다.
+     * 이 방식은 단일 서버 환경에서 성능을 향상시키고 리소스를 효율적으로 사용할 수 있습니다.
+     */
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.4.3'
+    implementation 'org.modelmapper:modelmapper:3.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2:3.4.1'
+    implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'io.jsonwebtoken:jjwt:0.12.6'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.4.0'
+    implementation 'org.mindrot:jbcrypt:0.4'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
