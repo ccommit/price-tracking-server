@@ -20,11 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleProductServiceImpl implements ProductService {
 
+    // 추후 batch 로 변경 예정
     @Override
     public List<GoogleProductResponseDTO> selectProduct() {
         try{
             // 추후 API Key는 환경변수로 관리
-            String apiKey = "";
+            String apiKey = "fd757fc957a93f77b7b3d31007f3a44b412ef9e2dd1f73e184ed648dedcb875a";
             String query = "갤럭시 25";
 
             String url = String.format(
@@ -44,9 +45,8 @@ public class GoogleProductServiceImpl implements ProductService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(response.body());
             JsonNode productsNode = rootNode.path("shopping_results");
-            List<GoogleProductResponseDTO> productList = objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
 
-            return productList;
+            return objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
         } catch (Exception ex) {
             System.out.println("Exception:");
             System.out.println(ex.toString());

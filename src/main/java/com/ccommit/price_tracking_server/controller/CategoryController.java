@@ -2,7 +2,7 @@ package com.ccommit.price_tracking_server.controller;
 
 import com.ccommit.price_tracking_server.DTO.CategoryDTO;
 import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
-import com.ccommit.price_tracking_server.service.CategoryService;
+import com.ccommit.price_tracking_server.service.serviceImpl.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
-    private final CategoryService categoryService;
+    private final CategoryServiceImpl categoryService;
 
     @PostMapping
     public ResponseEntity<CommonResponseDTO<CategoryDTO>> createCategories(@Validated @RequestBody CategoryDTO categoryDTO) {

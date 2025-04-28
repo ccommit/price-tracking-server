@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public interface ProductService{
+public interface ProductService {
+    // 추후 batch 로 변경 예정
     List<GoogleProductResponseDTO> selectProduct();
 }
