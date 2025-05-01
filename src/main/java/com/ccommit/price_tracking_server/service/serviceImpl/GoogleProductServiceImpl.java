@@ -1,6 +1,6 @@
 package com.ccommit.price_tracking_server.service.serviceImpl;
 
-import com.ccommit.price_tracking_server.DTO.GoogleProductResponseDTO;
+import com.ccommit.price_tracking_server.DTO.GoogleProductResponse;
 import com.ccommit.price_tracking_server.service.ProductService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,7 +21,7 @@ import java.util.List;
 public class GoogleProductServiceImpl implements ProductService {
 
     @Override
-    public List<GoogleProductResponseDTO> selectProduct() {
+    public List<GoogleProductResponse> selectProduct() {
         try{
             // 추후 API Key는 환경변수로 관리
             String apiKey = "";
@@ -44,7 +44,7 @@ public class GoogleProductServiceImpl implements ProductService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(response.body());
             JsonNode productsNode = rootNode.path("shopping_results");
-            List<GoogleProductResponseDTO> productList = objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
+            List<GoogleProductResponse> productList = objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
 
             return productList;
         } catch (Exception ex) {

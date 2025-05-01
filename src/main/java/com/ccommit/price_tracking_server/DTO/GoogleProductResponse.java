@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GoogleProductResponseDTO {
+public class GoogleProductResponse {
 
     @JsonProperty("position")
     private Integer position;

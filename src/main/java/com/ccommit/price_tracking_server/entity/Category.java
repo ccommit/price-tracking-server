@@ -32,6 +32,6 @@ public class Category {
     private Category parentCategory;
 
     @Builder.Default
-    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentCategory")
     private List<Category> subCategories = new ArrayList<>();
 }
