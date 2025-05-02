@@ -1,5 +1,6 @@
 package com.ccommit.price_tracking_server.service.serviceImpl;
 
+import com.ccommit.price_tracking_server.DTO.GoogleProductRequest;
 import com.ccommit.price_tracking_server.DTO.GoogleProductResponse;
 import com.ccommit.price_tracking_server.service.ProductService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -22,22 +23,18 @@ public class GoogleProductServiceImpl implements ProductService {
 
     // 추후 batch 로 변경 예정
     @Override
-    public List<GoogleProductResponse> selectProduct() {
+    public List<GoogleProductResponse> selectProduct(GoogleProductRequest googleProductRequest) {
         try{
-            // 추후 API Key는 환경변수로 관리
-            String apiKey = "";
-            String query = "갤럭시 25";
 
-            String url = String.format(
-                    "https://serpapi.com/search.json?engine=google_shopping&q=%s&google_domain=google.co.kr&gl=kr&hl=ko&location=585069a9ee19ad271e9b6c84&api_key=%s",
-                    java.net.URLEncoder.encode(query, java.nio.charset.StandardCharsets.UTF_8),
-                    apiKey
-            );
+            StringBuilder url = new StringBuilder();
+
+            url.append("https://serpapi.com/search.json?")
+                    .append(googleProductRequest.toQueryString());
 
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
+                    .uri(URI.create(url.toString()))
                     .GET()
                     .build();
 
