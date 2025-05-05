@@ -44,6 +44,7 @@ public class GoogleProductServiceImpl implements ProductService {
 
             return objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
         } catch (Exception ex) {
+            // 추후 Rabbitmq 로 에러 전송 예정
             System.out.println("Exception:");
             System.out.println(ex.toString());
         }
