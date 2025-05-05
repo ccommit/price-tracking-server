@@ -3,6 +3,7 @@ package com.ccommit.price_tracking_server.exception.handler;
 import com.ccommit.price_tracking_server.DTO.CommonResponse;
 import com.ccommit.price_tracking_server.exception.ExceptionDetailMessage;
 import com.ccommit.price_tracking_server.exception.PriceTrackingServerException;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,27 @@ public class GlobalExceptionHandler {
         log.error(defaultErrorResponse.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(defaultErrorResponse);
 
+    }
+
+    // ConstraintViolationException은 다음 두 가지 상황에서 발생할 수 있습니다.
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<CommonResponse<?>> handleConstraintViolation(ValidationException ex) {
+        Throwable cause = ex.getCause();
+
+        // 1. 커스텀 어노테이션 기반 유효성 검사에서 검증 실패 시 발생
+        if (cause instanceof PriceTrackingServerException ptse) {
+            return this.handlePriceTrackingServerException(ptse); // 기존 커스텀 예외 처리 핸들러 호출
+        }
+
+        // 2. JPA 엔티티와 관련된 유효성 검사나 쿼리 실행 중 오류가 발생했을 때 발생
+        log.error("서버 오류 발생: {}", ex.getMessage(), ex);
+        CommonResponse<?> errorResponse = new CommonResponse<>(
+                null,
+                "INTERNAL_SERVER_ERROR",
+                ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"),
+                0
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler({PriceTrackingServerException.class})
