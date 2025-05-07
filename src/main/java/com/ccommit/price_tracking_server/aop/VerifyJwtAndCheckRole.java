@@ -1,7 +1,7 @@
 package com.ccommit.price_tracking_server.aop;
 
 import com.ccommit.price_tracking_server.DTO.CommonResponse;
-import com.ccommit.price_tracking_server.annotation.CheckToken;
+import com.ccommit.price_tracking_server.aop.annotation.CheckToken;
 import com.ccommit.price_tracking_server.entity.User;
 import com.ccommit.price_tracking_server.enums.UserStatus;
 import com.ccommit.price_tracking_server.exception.InvalidRefreshTokenException;

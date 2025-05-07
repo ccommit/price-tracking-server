@@ -1,4 +1,4 @@
-package com.ccommit.price_tracking_server.annotation;
+package com.ccommit.price_tracking_server.aop.annotation;
 
 import com.ccommit.price_tracking_server.enums.UserStatus;
 

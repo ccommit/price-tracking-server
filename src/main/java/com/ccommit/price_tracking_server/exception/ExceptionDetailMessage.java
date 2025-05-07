@@ -10,6 +10,7 @@ public enum ExceptionDetailMessage {
     // Common
     INTERNAL_SERVER_ERROR("서버에서 예기치 않은 오류가 발생했습니다."),
     MISSING_REQUIRED_FIELD("필수 필드 {0}이(가) 누락되었습니다."),
+    NETWORK_ERROR("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
 
     // User
     INVALID_PASSWORD_FORMAT("비밀번호는 최소 8자 이상이어야 하며, 소문자, 숫자, 특수기호를 포함해야 합니다."),

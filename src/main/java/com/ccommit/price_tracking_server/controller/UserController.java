@@ -4,7 +4,7 @@ import com.ccommit.price_tracking_server.DTO.CommonResponse;
 import com.ccommit.price_tracking_server.DTO.UserDTO;
 import com.ccommit.price_tracking_server.DTO.UserLoginResponse;
 import com.ccommit.price_tracking_server.DTO.UserProfileResponse;
-import com.ccommit.price_tracking_server.annotation.CheckToken;
+import com.ccommit.price_tracking_server.aop.annotation.CheckToken;
 import com.ccommit.price_tracking_server.enums.SuccessDetailMessage;
 import com.ccommit.price_tracking_server.enums.UserStatus;
 import com.ccommit.price_tracking_server.service.UserService;
