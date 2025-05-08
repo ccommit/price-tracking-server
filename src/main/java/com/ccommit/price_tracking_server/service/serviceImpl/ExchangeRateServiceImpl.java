@@ -22,7 +22,7 @@ public class ExchangeRateServiceImpl {
     private static final String BASE_LIVE_URL = "https://api.exchangerate.host/live?access_key=%s&source=%s&currencies=%s";
     private static final String BASE_HISTORICAL_URL = "https://api.exchangerate.host/historical?date=%s&access_key=%s&source=%s&currencies=%s";
     //추후 API Key는 환경변수로 관리
-    private static final String ACCESS_KEY = "76058dabe843af511b38930e806a89e0";
+    private static final String ACCESS_KEY = "";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
