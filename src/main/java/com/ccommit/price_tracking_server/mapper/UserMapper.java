@@ -22,10 +22,6 @@ public class UserMapper {
         return user;
     }
 
-    public UserDTO convertToDTO(User user) {
-        return modelMapper.map(user, UserDTO.class);
-    }
-
     public UserProfileResponse convertToProfile(User user) {
         return modelMapper.map(user, UserProfileResponse.class);
     }

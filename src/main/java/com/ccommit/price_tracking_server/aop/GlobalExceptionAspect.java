@@ -1,7 +1,6 @@
 package com.ccommit.price_tracking_server.aop;
 
 import jakarta.persistence.PersistenceException;
-import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -21,65 +20,82 @@ import java.sql.SQLException;
 @Component
 @Log4j2
 public class GlobalExceptionAspect {
-
-    // DB 관련 예외를 처리하는 AOP
     @Around("execution(* com.ccommit.price_tracking_server.repository.*.save*(..)) || " +
             "execution(* com.ccommit.price_tracking_server.repository.*.delete*(..))")
-    @Transactional(rollbackOn = {SQLException.class, PersistenceException.class, DataIntegrityViolationException.class,
-            ObjectOptimisticLockingFailureException.class})
-    public Object handleDatabaseException(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object handleDatabaseAndNetworkException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
-            return joinPoint.proceed();  // 실제 메서드 실행
-        } catch (SQLException ex) { // JDBC 레벨의 예외 처리
-            log.error("SQL error in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
-            throw ex; // SQLException 그대로 던지기
+            // 비즈니스 로직 실행
+            return joinPoint.proceed();
+        } catch (SQLException ex) {
+            // SQL 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 SQL 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 SQL 오류 발생: " + joinPoint.getSignature(), ex);
         } catch (PersistenceException ex) {
-            // JPA 예외 처리
-            log.error("Persistence error in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
-            throw ex; // PersistenceException 그대로 던지기
+            // PersistenceException 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 JPA 오류(Persistence) 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 JPA 오류(Persistence) 발생: " + joinPoint.getSignature(), ex);
         } catch (DataIntegrityViolationException ex) {
-            // 무결성 제약 조건 위반 등
-            log.error("Data integrity violation in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
-            throw ex; // DataIntegrityViolationException 그대로 던지기
+            // 데이터 무결성 위반 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 데이터 무결성 위반 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 데이터 무결성 위반 발생: " + joinPoint.getSignature(), ex);
         } catch (ObjectOptimisticLockingFailureException ex) {
-            // 버전 충돌 등으로 인한 낙관적 락 실패
-            log.error("Optimistic locking failure in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
-            throw ex; // ObjectOptimisticLockingFailureException 그대로 던지기
+            // 낙관적 잠금 실패 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 낙관적 잠금 실패 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 낙관적 잠금 실패 발생: " + joinPoint.getSignature(), ex);
+        } catch (ConnectException ex) {
+            // 연결 실패 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 연결 거부 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 연결 거부 오류 발생: " + joinPoint.getSignature(), ex);
+        } catch (SocketTimeoutException ex) {
+            // 타임아웃 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 시간 초과(Timeout) 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 시간 초과(Timeout) 오류 발생: " + joinPoint.getSignature(), ex);
+        } catch (UnknownHostException ex) {
+            // 알 수 없는 호스트 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 알 수 없는 호스트 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 알 수 없는 호스트 오류 발생: " + joinPoint.getSignature(), ex);
+        } catch (SocketException ex) {
+            // 소켓 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 소켓 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 소켓 오류 발생: " + joinPoint.getSignature(), ex);
+        } catch (IOException ex) {
+            // I/O 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 입출력(I/O) 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 입출력(I/O) 오류 발생: " + joinPoint.getSignature(), ex);
         } catch (Exception ex) {
-            // 기타 예외 처리
-            log.error("Unexpected error in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
-            throw ex; // 기타 예외 그대로 던지기
+            // 예기치 않은 예외 처리 및 RuntimeException으로 감싸기
+            log.error("메서드에서 예기치 않은 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
+            throw new RuntimeException("메서드에서 예기치 않은 오류 발생: " + joinPoint.getSignature(), ex);
         }
     }
 
-    // 읽기 작업에 대해 예외를 처리하는 AOP
-    @Around("execution(* com.ccommit.price_tracking_server.repository.*.find(..)) ||" +
-            "execution(* com.ccommit.price_tracking_server.repository.*.get(..)) ||" +
-            "execution(* com.ccommit.price_tracking_server.repository.*.exists(..))")
+    // 읽기 작업용 AOP
+    @Around("execution(* com.ccommit.price_tracking_server.repository.*.find*(..)) ||" +
+            "execution(* com.ccommit.price_tracking_server.repository.*.get*(..)) ||" +
+            "execution(* com.ccommit.price_tracking_server.repository.*.exists*(..))")
     public Object handleReadException(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();  // 실제 메서드 실행
         } catch (ConnectException ex) {
             // 서버에 연결할 수 없는 경우 (ex. 서버 다운, 포트 미개방 등)
-            log.error("Connection refused in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
+            log.error("메서드에서 연결 거부 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
             throw ex; // ConnectException 그대로 던지기
         } catch (SocketTimeoutException ex) {
             // 응답 지연 등으로 연결이 시간 초과된 경우
-            log.error("Timeout occurred in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
+            log.error("메서드에서 시간 초과(Timeout) 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
             throw ex; // SocketTimeoutException 그대로 던지기
         } catch (UnknownHostException ex) {
             // 도메인 이름을 찾을 수 없을 때
-            log.error("Unknown host in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
+            log.error("메서드에서 알 수 없는 호스트 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
             throw ex; // UnknownHostException 그대로 던지기
         } catch (SocketException ex) {
             // 연결이 끊기는 일반적인 네트워크 오류
-            log.error("Socket exception in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
+            log.error("메서드에서 소켓 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
             throw ex; // SocketException 그대로 던지기
         } catch (IOException ex) {
             // 그 외 기타 입출력 오류
-            log.error("I/O error in method: {}. Error: {}", joinPoint.getSignature(), ex.getMessage());
+            log.error("메서드에서 입출력(I/O) 오류 발생: {}. 오류 메시지: {}", joinPoint.getSignature(), ex.getMessage());
             throw ex; // IOException 그대로 던지기
         }
     }
-
 }
