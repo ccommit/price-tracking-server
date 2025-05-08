@@ -1,7 +1,8 @@
 package com.ccommit.price_tracking_server.controller;
 
-import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
-import com.ccommit.price_tracking_server.DTO.GoogleProductResponseDTO;
+import com.ccommit.price_tracking_server.DTO.CommonResponse;
+import com.ccommit.price_tracking_server.DTO.GoogleProductResponse;
+import com.ccommit.price_tracking_server.enums.SuccessDetailMessage;
 import com.ccommit.price_tracking_server.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,10 +23,11 @@ public class ProductController {
 
     //추후 batch 로 변경 예정
     @GetMapping("/select")
-    public ResponseEntity<CommonResponseDTO<List<GoogleProductResponseDTO>>> selectGoogleProduct() {
+    public ResponseEntity<CommonResponse<List<GoogleProductResponse>>> selectGoogleProduct() {
 
-        List<GoogleProductResponseDTO> googleProductResponseDTOs = productService.selectProduct();
-        CommonResponseDTO<List<GoogleProductResponseDTO>> response = new CommonResponseDTO<>(googleProductResponseDTOs, "", "", 0);
+        SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_PRODUCT_SELECTED;
+        List<GoogleProductResponse> googleProductResponses = productService.selectProduct();
+        CommonResponse<List<GoogleProductResponse>> response = new CommonResponse<>(message.name(), message.getMessage(), googleProductResponses, 0);
 
         return ResponseEntity.ok(response);
     }

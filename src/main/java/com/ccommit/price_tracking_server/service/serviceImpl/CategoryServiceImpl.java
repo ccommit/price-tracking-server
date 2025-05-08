@@ -2,6 +2,7 @@ package com.ccommit.price_tracking_server.service.serviceImpl;
 
 import com.ccommit.price_tracking_server.DTO.CategoryDTO;
 import com.ccommit.price_tracking_server.entity.Category;
+import com.ccommit.price_tracking_server.enums.CategoryLevel;
 import com.ccommit.price_tracking_server.exception.CategoryHasChildrenException;
 import com.ccommit.price_tracking_server.exception.CategoryNotFoundException;
 import com.ccommit.price_tracking_server.exception.InvalidCategoryLevelException;
@@ -11,6 +12,8 @@ import com.ccommit.price_tracking_server.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Log4j2
 @Service
@@ -71,6 +74,16 @@ public class CategoryServiceImpl {
         // 삭제시 예외 발생시 ContollerAvice을 통해 예외처리
         categoryRepository.deleteById(categoryId);
         return true;
+    }
+
+    public static String fromJson(String level) {
+        String normalizedLevel = level.toUpperCase().replaceFirst("^LEVEL_", "");
+
+        return Arrays.stream(CategoryLevel.values())
+                .map(Enum::name)
+                .filter(name -> name.equals("LEVEL_" + normalizedLevel))
+                .findFirst()
+                .orElseThrow(InvalidCategoryLevelException::new);
     }
 
 }

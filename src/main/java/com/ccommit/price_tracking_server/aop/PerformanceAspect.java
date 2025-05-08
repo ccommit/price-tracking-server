@@ -1,6 +1,6 @@
 package com.ccommit.price_tracking_server.aop;
 
-import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
+import com.ccommit.price_tracking_server.DTO.CommonResponse;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -44,9 +44,9 @@ public class PerformanceAspect {
             ResponseEntity<?> responseEntity = (ResponseEntity<?>) result;
             Object body = responseEntity.getBody();
 
-            // 본문이 CommonResponseDTO 타입인 경우 실행 시간 추가
-            if (body instanceof CommonResponseDTO) {
-                CommonResponseDTO<?> responseBody = (CommonResponseDTO<?>) responseEntity.getBody();
+            // 본문이 CommonResponse 타입인 경우 실행 시간 추가
+            if (body instanceof CommonResponse) {
+                CommonResponse<?> responseBody = (CommonResponse<?>) responseEntity.getBody();
 
                 responseBody.setTotalRequestTime(seconds);
                 result = ResponseEntity.status(responseEntity.getStatusCode())

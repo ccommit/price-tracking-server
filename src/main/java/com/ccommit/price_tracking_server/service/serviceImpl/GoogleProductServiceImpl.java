@@ -1,6 +1,6 @@
 package com.ccommit.price_tracking_server.service.serviceImpl;
 
-import com.ccommit.price_tracking_server.DTO.GoogleProductResponseDTO;
+import com.ccommit.price_tracking_server.DTO.GoogleProductResponse;
 import com.ccommit.price_tracking_server.service.ProductService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,10 +22,10 @@ public class GoogleProductServiceImpl implements ProductService {
 
     // 추후 batch 로 변경 예정
     @Override
-    public List<GoogleProductResponseDTO> selectProduct() {
+    public List<GoogleProductResponse> selectProduct() {
         try{
             // 추후 API Key는 환경변수로 관리
-            String apiKey = "fd757fc957a93f77b7b3d31007f3a44b412ef9e2dd1f73e184ed648dedcb875a";
+            String apiKey = "";
             String query = "갤럭시 25";
 
             String url = String.format(

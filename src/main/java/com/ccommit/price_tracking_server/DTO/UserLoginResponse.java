@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResponseDTO {
+public class UserLoginResponse {
     @NotBlank
     private String accessToken;
 

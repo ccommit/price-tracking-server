@@ -1,7 +1,8 @@
 package com.ccommit.price_tracking_server.controller;
 
 import com.ccommit.price_tracking_server.DTO.CategoryDTO;
-import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
+import com.ccommit.price_tracking_server.DTO.CommonResponse;
+import com.ccommit.price_tracking_server.enums.SuccessDetailMessage;
 import com.ccommit.price_tracking_server.service.serviceImpl.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,25 +18,35 @@ public class CategoryController {
     private final CategoryServiceImpl categoryService;
 
     @PostMapping
-    public ResponseEntity<CommonResponseDTO<CategoryDTO>> createCategories(@Validated @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<CommonResponse<CategoryDTO>> createCategories(@Validated @RequestBody CategoryDTO categoryDTO) {
         log.info("카테고리 생성 요청: name={}", categoryDTO.getCategoryName());
-        CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
-        CommonResponseDTO<CategoryDTO> response = new CommonResponseDTO<>(createdCategory, "", "", 0);
+
+        // SuccessDetailMessage 사용하여 응답 메시지 설정
+        SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_CATEGORY_CREATED;
+        CommonResponse<CategoryDTO> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.createCategory(categoryDTO), 0);
+
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CommonResponseDTO<CategoryDTO>> updateCategories(@PathVariable("categoryId") Long categoryId, @Validated @RequestBody CategoryDTO categoryDTO) {
-        log.info("카테고리 수정 요청: categoriesId={}", categoryId);
-        CategoryDTO updateCategory = categoryService.updateCategory(categoryDTO, categoryId);
-        CommonResponseDTO<CategoryDTO> response = new CommonResponseDTO<>(updateCategory, "", "", 0);
+    public ResponseEntity<CommonResponse<CategoryDTO>> updateCategories(@PathVariable("categoryId") Long categoryId, @Validated @RequestBody CategoryDTO categoryDTO) {
+        log.info("카테고리 수정 요청: categoryId={}", categoryId);
+
+        // SuccessDetailMessage 사용하여 응답 메시지 설정
+        SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_CATEGORY_UPDATED;
+        CommonResponse<CategoryDTO> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.updateCategory(categoryDTO, categoryId), 0);
+
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<CommonResponseDTO<Boolean>> deletedCategories(@PathVariable("categoryId") Long categoryId) {
-        log.info("카테고리 삭제 요청: categoriesId={}", categoryId);
-        CommonResponseDTO<Boolean> response = new CommonResponseDTO<>(categoryService.deletedCategory(categoryId), "", "", 0);
+    public ResponseEntity<CommonResponse<Boolean>> deletedCategories(@PathVariable("categoryId") Long categoryId) {
+        log.info("카테고리 삭제 요청: categoryId={}", categoryId);
+
+        // SuccessDetailMessage 사용하여 응답 메시지 설정
+        SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_CATEGORY_DELETED;
+        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.deletedCategory(categoryId), 0);
+
         return ResponseEntity.ok(response);
     }
 }

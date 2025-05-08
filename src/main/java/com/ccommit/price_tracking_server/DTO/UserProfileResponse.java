@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserProfileResponseDTO {
+public class UserProfileResponse {
 
     @NotBlank
     @Size(min = 3, max = 20)

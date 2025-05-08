@@ -1,8 +1,8 @@
 package com.ccommit.price_tracking_server.service.serviceImpl;
 
 import com.ccommit.price_tracking_server.DTO.UserDTO;
-import com.ccommit.price_tracking_server.DTO.UserLoginResponseDTO;
-import com.ccommit.price_tracking_server.DTO.UserProfileResponseDTO;
+import com.ccommit.price_tracking_server.DTO.UserLoginResponse;
+import com.ccommit.price_tracking_server.DTO.UserProfileResponse;
 import com.ccommit.price_tracking_server.entity.User;
 import com.ccommit.price_tracking_server.enums.UserStatus;
 import com.ccommit.price_tracking_server.exception.*;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public UserProfileResponseDTO registerUser(UserDTO userDTO) {
+    public UserProfileResponse registerUser(UserDTO userDTO) {
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
             log.warn("비밀번호 불일치: username={}, email={}", userDTO.getUsername(), userDTO.getEmail());
             throw new PasswordMismatchException();
@@ -41,11 +41,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("회원 저장 완료: userId={}, username={}", user.getId(), user.getUsername());
 
-        return userMapper.convertToProfileDTO(user);
+        return userMapper.convertToProfile(user);
     }
 
     @Override
-    public UserLoginResponseDTO loginUser(UserDTO userDTO) {
+    public UserLoginResponse loginUser(UserDTO userDTO) {
         User user = userRepository.findByEmail(userDTO.getEmail())
                 .orElseThrow(UserNotFoundException::new);
 
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponseDTO updateUser(String email, UserDTO userDTO) {
+    public UserProfileResponse updateUser(String email, UserDTO userDTO) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         log.debug("User 조회 완료: email={}", user.getEmail());
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("회원 정보 수정 완료: userId={}, username={}", user.getId(), user.getUsername());
 
-        return userMapper.convertToProfileDTO(user);
+        return userMapper.convertToProfile(user);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.ccommit.price_tracking_server.aop;
 
-import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
+import com.ccommit.price_tracking_server.DTO.CommonResponse;
 import com.ccommit.price_tracking_server.annotation.CheckToken;
 import com.ccommit.price_tracking_server.entity.User;
 import com.ccommit.price_tracking_server.enums.UserStatus;
@@ -42,7 +42,7 @@ public class VerifyJwtAndCheckRole {
         if(claims.get("token_type", String.class).equals("REFRESH") && isTokenInRedis(claims, token)) {
             User user = userService.getUserById(Long.parseLong(claims.getSubject()));
             String newAccessToken = JwtTokenProvider.generateAccessToken(user.getEmail(), user.getStatus());
-            return ResponseEntity.ok(new CommonResponseDTO<>(newAccessToken, "", "", 0));
+            return ResponseEntity.ok(new CommonResponse<>(newAccessToken, "", "", 0));
         }
         String email = claims.getSubject();
         UserStatus userStatus = UserStatus.valueOf(claims.get("roles", String.class).toUpperCase());

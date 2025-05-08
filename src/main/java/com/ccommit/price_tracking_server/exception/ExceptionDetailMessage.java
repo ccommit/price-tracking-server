@@ -51,4 +51,12 @@ public enum ExceptionDetailMessage {
             return "알 수 없는 예외입니다."; // 예외 코드가 존재하지 않는 경우
         }
     }
+
+    public static ExceptionDetailMessage exceptionCodeToEnum(String exceptionCode) {
+        try {
+            return ExceptionDetailMessage.valueOf(exceptionCode);
+        } catch (IllegalArgumentException e) {
+            return null; // 예외 코드가 존재하지 않는 경우
+        }
+    }
 }
