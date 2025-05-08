@@ -8,10 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -119,11 +121,17 @@ public class GlobalExceptionHandler {
         log.error(errorResponse.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
-
+    // 트랜잭션 관련 예외
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<String> handleTransactionException(TransactionSystemException ex) {
+        log.warn("Transaction failed: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("트랜잭션 처리 중 오류가 발생했습니다.");
+    }
     // 네트워크 관련 예외 처리 (Socket, Connect, Timeout 등)
     @ExceptionHandler({
             ConnectException.class, SocketTimeoutException.class, UnknownHostException.class,
-            SocketException.class, IOException.class
+            SocketException.class, IOException.class, JDBCConnectionException.class
     })
     public ResponseEntity<CommonResponse<?>> handleNetworkException(Exception ex, HttpServletRequest request) {
         String endpoint = request.getRequestURI();

@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleProductServiceImpl implements ProductService {
 
+    // 추후 batch 로 변경 예정
     @Override
     public List<GoogleProductResponse> selectProduct(GoogleProductRequest googleProductRequest) {
         try{

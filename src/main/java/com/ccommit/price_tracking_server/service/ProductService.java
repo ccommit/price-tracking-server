@@ -8,5 +8,6 @@ import java.util.List;
 
 @Service
 public interface ProductService{
+    // 추후 batch 로 변경 예정
     List<GoogleProductResponse> selectProduct(GoogleProductRequest googleProductRequest);
 }
