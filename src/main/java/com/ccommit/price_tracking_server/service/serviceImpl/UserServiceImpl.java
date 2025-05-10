@@ -1,8 +1,8 @@
 package com.ccommit.price_tracking_server.service.serviceImpl;
 
 import com.ccommit.price_tracking_server.DTO.UserDTO;
-import com.ccommit.price_tracking_server.DTO.UserLoginResponseDTO;
-import com.ccommit.price_tracking_server.DTO.UserProfileResponseDTO;
+import com.ccommit.price_tracking_server.DTO.UserLoginResponse;
+import com.ccommit.price_tracking_server.DTO.UserProfileResponse;
 import com.ccommit.price_tracking_server.entity.User;
 import com.ccommit.price_tracking_server.enums.UserStatus;
 import com.ccommit.price_tracking_server.exception.*;
@@ -11,6 +11,7 @@ import com.ccommit.price_tracking_server.repository.UserRepository;
 import com.ccommit.price_tracking_server.security.JwtTokenProvider;
 import com.ccommit.price_tracking_server.service.UserService;
 import com.ccommit.price_tracking_server.utils.BcryptEncrypt;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,7 +29,8 @@ public class UserServiceImpl implements UserService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public UserProfileResponseDTO registerUser(UserDTO userDTO) {
+    @Transactional
+    public UserProfileResponse registerUser(UserDTO userDTO) {
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
             log.warn("비밀번호 불일치: username={}, email={}", userDTO.getUsername(), userDTO.getEmail());
             throw new PasswordMismatchException();
@@ -41,11 +43,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("회원 저장 완료: userId={}, username={}", user.getId(), user.getUsername());
 
-        return userMapper.convertToProfileDTO(user);
+        return userMapper.convertToProfile(user);
     }
 
     @Override
-    public UserLoginResponseDTO loginUser(UserDTO userDTO) {
+    @Transactional
+    public UserLoginResponse loginUser(UserDTO userDTO) {
         User user = userRepository.findByEmail(userDTO.getEmail())
                 .orElseThrow(UserNotFoundException::new);
 
@@ -73,7 +76,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponseDTO updateUser(String email, UserDTO userDTO) {
+    @Transactional
+    public UserProfileResponse updateUser(String email, UserDTO userDTO) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         log.debug("User 조회 완료: email={}", user.getEmail());
@@ -83,7 +87,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("회원 정보 수정 완료: userId={}, username={}", user.getId(), user.getUsername());
 
-        return userMapper.convertToProfileDTO(user);
+        return userMapper.convertToProfile(user);
     }
 
     @Override
@@ -117,6 +121,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);

@@ -10,6 +10,7 @@ public enum ExceptionDetailMessage {
     // Common
     INTERNAL_SERVER_ERROR("서버에서 예기치 않은 오류가 발생했습니다."),
     MISSING_REQUIRED_FIELD("필수 필드 {0}이(가) 누락되었습니다."),
+    NETWORK_ERROR("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
 
     // User
     INVALID_PASSWORD_FORMAT("비밀번호는 최소 8자 이상이어야 하며, 소문자, 숫자, 특수기호를 포함해야 합니다."),
@@ -32,7 +33,14 @@ public enum ExceptionDetailMessage {
     ROLE_ACCESS_DENIED("해당 리소스에 접근할 권한이 없습니다."),
     INVALID_REFRESH_TOKEN("유효하지 않은 리프레시 토큰입니다. 제공된 리프레시 토큰이 Redis에 저장된 토큰과 일치하지 않습니다. " +
             "유효한 리프레시 토큰을 사용해주세요."),
-    TOKEN_NOT_FOUND("제공된 JWT 토큰이 Redis에 존재하지 않습니다. 유효한 토큰을 사용해주세요.");
+    TOKEN_NOT_FOUND("제공된 JWT 토큰이 Redis에 존재하지 않습니다. 유효한 토큰을 사용해주세요."),
+
+    // Category
+    PARENT_CATEGORY_NOT_FOUND("부모 카테고리를 찾을 수 없습니다."),
+    INVALID_CATEGORY_LEVEL("잘못된 카테고리 레벨입니다."),
+    CATEGORY_NOT_FOUND("카테고리를 찾을 수 없습니다."),
+    CATEGORY_NAME_TOO_LONG("카테고리 이름은 1자 이상, 20자 이하이어야 합니다."),
+    CATEGORY_HAS_CHILDREN("하위 카테고리가 존재해 삭제할 수 없습니다.");
 
     private final String message;
 
@@ -42,6 +50,14 @@ public enum ExceptionDetailMessage {
             return ExceptionDetailMessage.valueOf(exceptionCode).getMessage();
         } catch (IllegalArgumentException e) {
             return "알 수 없는 예외입니다."; // 예외 코드가 존재하지 않는 경우
+        }
+    }
+
+    public static ExceptionDetailMessage exceptionCodeToEnum(String exceptionCode) {
+        try {
+            return ExceptionDetailMessage.valueOf(exceptionCode);
+        } catch (IllegalArgumentException e) {
+            return null; // 예외 코드가 존재하지 않는 경우
         }
     }
 }

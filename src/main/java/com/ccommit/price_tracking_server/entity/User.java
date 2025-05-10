@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Table(name = "users")  // 테이블명 지정 (선택사항)
+@Table(name = "users")
 @Getter
 @Setter
 @Builder

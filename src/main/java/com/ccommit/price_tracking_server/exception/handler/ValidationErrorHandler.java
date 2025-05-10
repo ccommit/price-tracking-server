@@ -1,6 +1,6 @@
 package com.ccommit.price_tracking_server.exception.handler;
 
-import com.ccommit.price_tracking_server.DTO.CommonResponseDTO;
+import com.ccommit.price_tracking_server.DTO.CommonResponse;
 import com.ccommit.price_tracking_server.exception.ExceptionDetailMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
@@ -15,27 +15,35 @@ public class ValidationErrorHandler {
     }
 
     // FieldError에 따른 오류 처리
-    public CommonResponseDTO<?> handleFieldError(FieldError error) {
-        String exceptionCode;
-        CommonResponseDTO<?> errorResponse;
+    public CommonResponse<?> handleFieldError(FieldError error) {
+        String fieldName = error.getField();
+        String[] errorCodes = error.getCodes();
+        boolean isCategoryName = "categoryName".equals(fieldName);
+        boolean isSizeViolation = errorCodes != null && errorCodes[0].startsWith("Size");
+        ExceptionDetailMessage message = null;
+        String detailMessage = "";
 
         if (isNotBlankError(error)) {
+            message = ExceptionDetailMessage.MISSING_REQUIRED_FIELD;
+            detailMessage = MessageFormat.format(message.getMessage(), error.getField());
             // 필수 필드 누락 오류 처리
-            exceptionCode = "MISSING_REQUIRED_FIELD";
-            errorResponse = new CommonResponseDTO<>(
-                    null, exceptionCode, ExceptionDetailMessage.getExceptionMessage(exceptionCode),
-                    0);
+        }
+        else if (isCategoryName && isSizeViolation) {
+            // 카테고리 이름 오류 처리
+            message = ExceptionDetailMessage.CATEGORY_NAME_TOO_LONG;
+            detailMessage = message.getMessage();
 
-            String detailMessage = errorResponse.getErrorDetails();
-            detailMessage = MessageFormat.format(detailMessage, error.getField());
-            errorResponse.setErrorDetails(detailMessage);
-        } else {
+        }else {
             // 형식 오류 처리
-            exceptionCode = "INVALID_" + error.getField().toUpperCase() + "_FORMAT";
-            errorResponse = new CommonResponseDTO<>(null, exceptionCode,
-                    ExceptionDetailMessage.getExceptionMessage(exceptionCode), 0);
+             String exceptionCode = new StringBuilder()
+                            .append("INVALID_")
+                            .append(error.getField().toUpperCase())
+                            .append("_FORMAT")
+                            .toString();
+            message = ExceptionDetailMessage.exceptionCodeToEnum(exceptionCode);
+            detailMessage = message.getMessage();
         }
 
-        return errorResponse;
+        return new CommonResponse<>(message.name(), detailMessage, null, 0);
     }
 }

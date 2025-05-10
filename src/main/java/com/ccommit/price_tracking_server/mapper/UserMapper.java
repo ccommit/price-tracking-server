@@ -2,8 +2,8 @@ package com.ccommit.price_tracking_server.mapper;
 
 
 import com.ccommit.price_tracking_server.DTO.UserDTO;
-import com.ccommit.price_tracking_server.DTO.UserLoginResponseDTO;
-import com.ccommit.price_tracking_server.DTO.UserProfileResponseDTO;
+import com.ccommit.price_tracking_server.DTO.UserLoginResponse;
+import com.ccommit.price_tracking_server.DTO.UserProfileResponse;
 import com.ccommit.price_tracking_server.entity.User;
 import com.ccommit.price_tracking_server.utils.BcryptEncrypt;
 import lombok.RequiredArgsConstructor;
@@ -22,21 +22,14 @@ public class UserMapper {
         return user;
     }
 
-    public UserDTO convertToDTO(User user) {
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        return userDTO;
+    public UserProfileResponse convertToProfile(User user) {
+        return modelMapper.map(user, UserProfileResponse.class);
     }
 
-    public UserProfileResponseDTO convertToProfileDTO(User user) {
-        UserProfileResponseDTO userProfileResponseDTO = modelMapper.map(user, UserProfileResponseDTO.class);
-        return userProfileResponseDTO;
-    }
-
-    public UserLoginResponseDTO convertToLoginDTO(String accessToken, String refreshToken) {
-        UserLoginResponseDTO userLoginResponseDTO = UserLoginResponseDTO.builder()
+    public UserLoginResponse convertToLoginDTO(String accessToken, String refreshToken) {
+        return UserLoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
-        return userLoginResponseDTO;
     }
 }
