@@ -68,4 +68,10 @@ public class GoogleProductResponse {
 
     @JsonProperty("extensions")
     private List<String> extensions;
+
+    @JsonProperty("delivery")
+    private String delivery;
+
+    @JsonProperty("second_hand_condition")
+    private String secondHandCondition;
 }

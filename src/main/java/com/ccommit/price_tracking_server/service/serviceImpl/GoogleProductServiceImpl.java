@@ -2,6 +2,9 @@ package com.ccommit.price_tracking_server.service.serviceImpl;
 
 import com.ccommit.price_tracking_server.DTO.GoogleProductRequest;
 import com.ccommit.price_tracking_server.DTO.GoogleProductResponse;
+import com.ccommit.price_tracking_server.entity.Product;
+import com.ccommit.price_tracking_server.mapper.ProductMapper;
+import com.ccommit.price_tracking_server.repository.ProductRepository;
 import com.ccommit.price_tracking_server.service.ProductService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +23,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GoogleProductServiceImpl implements ProductService {
+    private final MorphologyServiceImpl morphologyService;
+    private final ProductMapper productMapper;
+    private final ProductRepository productRepository;
 
     // 추후 batch 로 변경 예정
     @Override
@@ -42,8 +48,13 @@ public class GoogleProductServiceImpl implements ProductService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(response.body());
             JsonNode productsNode = rootNode.path("shopping_results");
-
-            return objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
+            List<GoogleProductResponse> googleProductResponseList = objectMapper.readValue(productsNode.toString(), new TypeReference<>(){});
+            for (GoogleProductResponse googleProductResponse : googleProductResponseList) {
+                Product product = productMapper.convertToEntity(googleProductResponse);
+                product.setCategoryId(morphologyService.assignCategory(googleProductResponse.getTitle()));
+                productRepository.save(product);
+            }
+            return googleProductResponseList;
         } catch (Exception ex) {
             // 추후 Rabbitmq 로 에러 전송 예정
             System.out.println("Exception:");
