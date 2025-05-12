@@ -1,0 +1,6 @@
+갤럭시=Galaxy
+울트라=Ultra
+아이폰=iPhone
+삼성=Samsung
+S25=S25
+플러스=+
