@@ -18,10 +18,17 @@ public class CommonResponse<T> {
     @Setter
     private float totalRequestTime;
 
-    public CommonResponse(String code, String detailsMessage, T data, float totalRequestTime) {
+    public CommonResponse(String code, String detailsMessage , T data ) {
         this.code = code;
         this.detailsMessage = detailsMessage;
         this.data = data;
-        this.totalRequestTime = totalRequestTime;
+        this.totalRequestTime = 0;
+    }
+
+    public CommonResponse(String code, String detailsMessage) {
+        this.code = code;
+        this.detailsMessage = detailsMessage;
+        this.data = null;
+        this.totalRequestTime = 0;
     }
 }

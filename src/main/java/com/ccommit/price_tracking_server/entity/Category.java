@@ -2,7 +2,10 @@ package com.ccommit.price_tracking_server.entity;
 
 import com.ccommit.price_tracking_server.enums.CategoryLevel;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "categories")  // 테이블 이름
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

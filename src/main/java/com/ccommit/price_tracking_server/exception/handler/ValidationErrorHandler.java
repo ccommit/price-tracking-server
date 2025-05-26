@@ -44,6 +44,6 @@ public class ValidationErrorHandler {
             detailMessage = message.getMessage();
         }
 
-        return new CommonResponse<>(message.name(), detailMessage, null, 0);
+        return new CommonResponse<>(message.name(), detailMessage);
     }
 }

@@ -56,7 +56,10 @@ public class GlobalExceptionHandler {
         }
 
         // 만약 FieldError가 없다면 기본 오류 반환
-        CommonResponse<?> defaultErrorResponse = new CommonResponse<>(null, "INVALID_REQUEST", "", 0);
+
+        CommonResponse<?> defaultErrorResponse = new CommonResponse<>(
+                "INVALID_REQUEST",
+                ExceptionDetailMessage.getExceptionMessage("INVALID_REQUEST"));
         log.error(defaultErrorResponse.toString());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(defaultErrorResponse);
 
@@ -77,18 +80,16 @@ public class GlobalExceptionHandler {
         // 이는 PersistenceException과 구분되며, 후자는 주로 데이터베이스 연결 문제나 쿼리 오류와 관련됨.
         log.error("서버 오류 발생: {}", ex.getMessage(), ex);
         CommonResponse<?> errorResponse = new CommonResponse<>(
-                null,
                 "INTERNAL_SERVER_ERROR",
-                ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"),
-                0
+                ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR")
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler({PriceTrackingServerException.class})
     public ResponseEntity<CommonResponse<?>> handlePriceTrackingServerException(PriceTrackingServerException ex) {
-        CommonResponse<?> errorResponse = new CommonResponse<>(null,
-                ex.getErrorCode(), ExceptionDetailMessage.getExceptionMessage(ex.getErrorCode()), 0);
+        CommonResponse<?> errorResponse = new CommonResponse<>(
+                ex.getErrorCode(), ExceptionDetailMessage.getExceptionMessage(ex.getErrorCode()));
         log.error(errorResponse.toString());
         return ResponseEntity.ok(errorResponse);
     }
@@ -116,8 +117,8 @@ public class GlobalExceptionHandler {
 
         // 예외를 로그로 출력
         log.error(logMessage.toString());
-        CommonResponse<?> errorResponse = new CommonResponse<>(null,
-                "INTERNAL_SERVER_ERROR", ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"), 0);
+        CommonResponse<?> errorResponse = new CommonResponse<>("INTERNAL_SERVER_ERROR",
+                ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"));
         log.error(errorResponse.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
@@ -138,8 +139,8 @@ public class GlobalExceptionHandler {
         String method = request.getMethod();
         log.error("네트워크 오류 발생: {} - 요청 정보: {} {}", ex.getMessage(), method, endpoint);
 
-        CommonResponse<?> errorResponse = new CommonResponse<>(null,
-                "NETWORK_ERROR", ExceptionDetailMessage.getExceptionMessage("NETWORK_ERROR"), 0);
+        CommonResponse<?> errorResponse = new CommonResponse<>("NETWORK_ERROR",
+                ExceptionDetailMessage.getExceptionMessage("NETWORK_ERROR"));
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
     }
 
@@ -147,8 +148,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CommonResponse<?>> handleException(Exception ex) {
 
         log.error("서버 오류 발생: {}", ex.getMessage(), ex);
-        CommonResponse<?> errorResponse = new CommonResponse<>(null,
-                "INTERNAL_SERVER_ERROR", ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"), 0);
+        CommonResponse<?> errorResponse = new CommonResponse<>("INTERNAL_SERVER_ERROR",
+                ExceptionDetailMessage.getExceptionMessage("INTERNAL_SERVER_ERROR"));
         log.error(errorResponse.toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

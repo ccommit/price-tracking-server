@@ -29,7 +29,7 @@ public class ProductController {
 
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_PRODUCT_SELECTED;
         CommonResponse<List<GoogleProductResponse>> response = new CommonResponse<>(message.name(), message.getMessage(),
-                productService.selectProduct(googleProductRequest), 0);
+                productService.selectProduct(googleProductRequest));
 
         return ResponseEntity.ok(response);
     }

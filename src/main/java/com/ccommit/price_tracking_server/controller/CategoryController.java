@@ -25,7 +25,7 @@ public class CategoryController {
 
         // SuccessDetailMessage 사용하여 응답 메시지 설정
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_CATEGORY_CREATED;
-        CommonResponse<CategoryDTO> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.createCategory(categoryDTO), 0);
+        CommonResponse<CategoryDTO> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.createCategory(categoryDTO));
 
         return ResponseEntity.ok(response);
     }
@@ -36,7 +36,7 @@ public class CategoryController {
 
         // SuccessDetailMessage 사용하여 응답 메시지 설정
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_CATEGORY_UPDATED;
-        CommonResponse<CategoryDTO> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.updateCategory(categoryDTO, categoryId), 0);
+        CommonResponse<CategoryDTO> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.updateCategory(categoryDTO, categoryId));
 
         return ResponseEntity.ok(response);
     }
@@ -47,7 +47,7 @@ public class CategoryController {
 
         // SuccessDetailMessage 사용하여 응답 메시지 설정
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_CATEGORY_DELETED;
-        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.deletedCategory(categoryId), 0);
+        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), categoryService.deletedCategory(categoryId));
 
         return ResponseEntity.ok(response);
     }

@@ -19,9 +19,8 @@ public class PerformanceAspect {
     private static final long THRESHOLD_TIME = 200;
 
     // @Around 어노테이션을 사용하여 메서드 실행 전후로 시간 측정을 함
-    @Around("execution(* com.ccommit.price_tracking_server..*(..)) && " +
-            "@within(org.springframework.web.bind.annotation.RestControllerAdvice) || " +
-            "@within(org.springframework.web.bind.annotation.RestController)")
+     @Around("execution(* com.ccommit.price_tracking_server..*(..)) && " +
+            "(@within(org.springframework.web.bind.annotation.RestControllerAdvice) || @within(org.springframework.web.bind.annotation.RestController))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start(); // 메서드 실행 전 시간을 측정
@@ -34,14 +33,14 @@ public class PerformanceAspect {
         String methodName = joinPoint.getSignature().getName();
         long millis = stopWatch.getTotalTimeMillis();
         float seconds = millis / 1000.0f;
+
         // 특정 임계값 이상인 경우에만 로그 기록
         if (millis > THRESHOLD_TIME) {
             log.info("{} executed in {} seconds", methodName, seconds);  // 임계값 초과시 로그 기록
         }
 
         // response에 실행 시간 정보 추가
-        if (result instanceof ResponseEntity<?>) {
-            ResponseEntity<?> responseEntity = (ResponseEntity<?>) result;
+        if (result instanceof ResponseEntity<?> responseEntity) {
             Object body = responseEntity.getBody();
 
             // 본문이 CommonResponse 타입인 경우 실행 시간 추가

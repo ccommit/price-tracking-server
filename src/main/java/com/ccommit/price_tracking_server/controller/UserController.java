@@ -30,7 +30,7 @@ public class UserController {
         UserProfileResponse signUpDTO = userService.registerUser(userDTO);
 
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_USER_REGISTERED;
-        CommonResponse<UserProfileResponse> response = new CommonResponse<>(message.name(), message.getMessage(), signUpDTO, 0);
+        CommonResponse<UserProfileResponse> response = new CommonResponse<>(message.name(), message.getMessage(), signUpDTO);
 
         return ResponseEntity.ok(response);
     }
@@ -40,7 +40,7 @@ public class UserController {
         log.info("로그인 요청: email={}", EmailMaskingUtil.maskEmail(userDTO.getEmail()));
 
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_USER_LOGGED_IN;
-        CommonResponse<UserLoginResponse> response = new CommonResponse<>(message.name(), message.getMessage(), userService.loginUser(userDTO), 0);
+        CommonResponse<UserLoginResponse> response = new CommonResponse<>(message.name(), message.getMessage(), userService.loginUser(userDTO));
 
         return ResponseEntity.ok(response);
     }
@@ -51,7 +51,7 @@ public class UserController {
         log.info("회원 정보 수정 요청: email={}", EmailMaskingUtil.maskEmail(email));
 
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_USER_UPDATED;
-        CommonResponse<UserProfileResponse> response = new CommonResponse<>(message.name(), message.getMessage(), userService.updateUser(email, userDTO), 0);
+        CommonResponse<UserProfileResponse> response = new CommonResponse<>(message.name(), message.getMessage(), userService.updateUser(email, userDTO));
 
         return ResponseEntity.ok(response);
     }
@@ -63,7 +63,7 @@ public class UserController {
 
         // SuccessDetailMessage 사용하여 응답 메시지 설정
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_TOKEN_REFRESHED;
-        CommonResponse<String> response = new CommonResponse<>(message.name(), message.getMessage(), "", 0);
+        CommonResponse<String> response = new CommonResponse<>(message.name(), message.getMessage());
 
         return ResponseEntity.ok(response);
     }
@@ -74,7 +74,7 @@ public class UserController {
 
         // SuccessDetailMessage 사용하여 응답 메시지 설정
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_NICKNAME_CHECKED;
-        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), userService.checkNickname(userName), 0);
+        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), userService.checkNickname(userName));
 
         return ResponseEntity.ok(response);
     }
@@ -85,7 +85,7 @@ public class UserController {
         log.info("로그아웃 요청");
 
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_USER_LOGGED_OUT;
-        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), userService.logoutUser(email),  0);
+        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), userService.logoutUser(email));
 
         return ResponseEntity.ok(response);
     }
@@ -96,7 +96,7 @@ public class UserController {
         log.info("회원 탈퇴 요청: email={}", EmailMaskingUtil.maskEmail(email));
 
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_USER_DELETED;
-        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), userService.deleteUser(email), 0);
+        CommonResponse<Boolean> response = new CommonResponse<>(message.name(), message.getMessage(), userService.deleteUser(email));
 
         return ResponseEntity.ok(response);
     }

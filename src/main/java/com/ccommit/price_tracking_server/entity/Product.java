@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +17,7 @@ public class Product {
     @Column(name = "product_id")
     private Long productId;
 
+    @Setter
     @Column(name = "category_id")
     private Long categoryId;
 

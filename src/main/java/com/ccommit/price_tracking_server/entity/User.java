@@ -10,7 +10,6 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,10 +39,16 @@ public class User {
     @Column(name = "status", nullable = false)
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Setter
     private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "email_verified", nullable = false)
     @Builder.Default
     private Boolean emailVerified = false;
+
+    public void updateProfile(String username, String phone) {
+        this.username = (username != null) ? username : this.username;
+        this.phone = (phone != null) ? phone : this.phone;
+    }
 
 }

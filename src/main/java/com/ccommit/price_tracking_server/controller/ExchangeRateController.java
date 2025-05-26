@@ -27,7 +27,7 @@ public class ExchangeRateController {
         // 환율 조회 API는 삭제 예정이라 SUCCESS_PRODUCT_SELECTED으로 성공 메시지 대체
         SuccessDetailMessage message = SuccessDetailMessage.SUCCESS_PRODUCT_SELECTED;
         CommonResponse<ExchangeRateDTO> response = new CommonResponse<>(message.name(), message.getMessage(),
-                exchangeRateService.getExchangeRates(currency, date), 0);
+                exchangeRateService.getExchangeRates(currency, date));
         return ResponseEntity.ok(response);
     }
 }

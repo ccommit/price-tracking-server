@@ -81,8 +81,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         log.debug("User 조회 완료: email={}", user.getEmail());
-        user.setPhone(userDTO.getPhone());
-        user.setUsername(userDTO.getUsername());
+        user.updateProfile(userDTO.getPhone(), userDTO.getUsername());
 
         userRepository.save(user);
         log.info("회원 정보 수정 완료: userId={}, username={}", user.getId(), user.getUsername());

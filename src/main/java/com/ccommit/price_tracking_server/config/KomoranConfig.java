@@ -10,7 +10,8 @@ public class KomoranConfig {
 
     @Bean
     public Komoran komoran() {
-        Komoran komoran = new Komoran(DEFAULT_MODEL.FULL);
-        return komoran;
+        // Komoran의 기본 모델을 FULL로 설정합니다.
+        // 현재 3.3.9 버전사용
+        return new Komoran(DEFAULT_MODEL.FULL);
     }
 }
